@@ -16,19 +16,20 @@ function CandidatesCoontext() {
         isPending,
     } = useCandidateContext()
 
-
     return (
-        <> {
-            isPending ? (<div
-                style={{
-                    display: 'flex',
-                    fontSize: '30px',
-                    justifyContent: 'center',
-                    marginTop: '200px',
-                }}
-            >
-                <RingLoader />
-            </div>) :
+        <div className="modern-card" style={{ marginTop: '20px' }}>
+            {isPending ? (
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        minHeight: '60vh',
+                    }}
+                >
+                    <RingLoader color="var(--primary-blue)" />
+                </div>
+            ) : (
                 <DataTable
                     getRowId={getRowId}
                     columns={columns}
@@ -39,8 +40,8 @@ function CandidatesCoontext() {
                     pageSize={pageSize}
                     onPaginationModelChange={handlePaginationModelChange}
                 />
-        }
-        </>
+            )}
+        </div>
     )
 }
 

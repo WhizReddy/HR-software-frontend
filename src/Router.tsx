@@ -11,7 +11,6 @@ import Login from './Pages/Login/Login'
 import Payroll from './Pages/Payroll/Payroll.tsx'
 import Profile from './Pages/Profile/Profile'
 import Recruitment from './Pages/Recruitment/Recruitment.tsx'
-import Structure from './Pages/Structure/Structure.tsx'
 import Inventory from './Pages/Inventory/Inventory.tsx'
 import Career from './Pages/Career/Career.tsx'
 import Holdings from './Pages/Holdings/Holdings.tsx'
@@ -21,8 +20,6 @@ import About from './Pages/About/About.tsx'
 import UserVacations from './Pages/Vacation/UserVacations.tsx'
 import EmailConfirmation from './Pages/Recruitment/Component/EmailConfirmation.tsx'
 import NotFound from './Pages/NotFound/NotFound.tsx'
-import UserPromotion from './Pages/Promotion/UserPromotion.tsx'
-import Promotion from './Pages/Promotion/Promotion.tsx'
 
 export default function Router() {
     const router = createBrowserRouter([
@@ -34,7 +31,6 @@ export default function Router() {
             path: 'recruitment',
             element: <Recruitment />,
         },
-
         {
             path: '/applicant/confirm',
             element: <EmailConfirmation />,
@@ -49,7 +45,6 @@ export default function Router() {
         },
         {
             path: '/',
-
             element: (
                 <>
                     <PrivateRoute />
@@ -59,14 +54,6 @@ export default function Router() {
                 {
                     path: '/employees',
                     element: <Employees />,
-                },
-                {
-                    path: '/promotion',
-                    element: <Promotion />,
-                },
-                {
-                    path: '/promotion/:id',
-                    element: <UserPromotion />,
                 },
                 { path: '/dashboard', element: <Dashboard />, index: false },
                 {
@@ -96,10 +83,6 @@ export default function Router() {
                 {
                     path: '/payroll',
                     element: <Payroll />,
-                },
-                {
-                    path: '/structure',
-                    element: <Structure />,
                 },
                 {
                     path: '/candidates',

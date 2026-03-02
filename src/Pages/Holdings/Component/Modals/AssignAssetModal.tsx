@@ -3,22 +3,17 @@ import { useContext, useEffect, useCallback } from 'react'
 import { HoldingsContext } from '../../HoldingsContext'
 import AxiosInstance from '@/Helpers/Axios'
 import { Asset } from '../../TAsset'
-import { Autocomplete, CircularProgress, TextField } from '@mui/material'
-import { inputStyles } from '@/Components/Input/Styles'
-import Button from '@/Components/Button/Button'
-import { ButtonTypes } from '@/Components/Button/ButtonTypes'
-import Input from '@/Components/Input/Index'
+import { Button } from '@/Components/ui/button'
 import { ErrorText } from '@/Components/Error/ErrorTextForm'
-import { minLength, nonEmpty, pipe, string } from 'valibot'
-import style from '../../style/assignAssetModal.module.scss'
+import { nonEmpty, pipe, string } from 'valibot'
 import { useAssignAssetForm } from '../../Hook'
+import { RingLoader } from 'react-spinners'
 
 export const AssignAssetModal = () => {
     const {
         searchParams,
         handleCloseOnModal: handleClose,
         isOpenAssignAsset: isOpen,
-        setIsOpenAssignAsset: setIsOpen,
         optionsAssignAsset: options,
         setOptionsAssignAsset: setOptions,
         autocompleteLoadingAssignAsset: autocompleteLoading,
@@ -60,138 +55,101 @@ export const AssignAssetModal = () => {
             open={!!searchParams.get('assignItem')}
             handleClose={handleClose}
         >
-            <h3 className={style.modalTitle}>Assign Item</h3>
+            <div className="p-6 max-w-md w-full mx-auto bg-white rounded-xl shadow-lg relative">
+                <h3 className="text-xl font-bold text-slate-800 mb-6 text-center">Assign Item</h3>
 
-            <form
-                onSubmit={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    form.handleSubmit()
-                }}
-                className={style.itemAssigner}
-            >
-                <form.Field
-                    name="assetId"
-                    validators={{
-                        onChange: pipe(
-                            string('Serial Number is required'),
-                            nonEmpty('Please type your serial number'),
-                            minLength(
-                                10,
-                                'Serial Number should be at least 10 characters long',
-                            ),
-                        ),
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        form.handleSubmit()
                     }}
-                    children={(field) => (
-                        <div>
-                            <Autocomplete
-                                id="users-list"
-                                sx={{
-                                    width: '100%',
-                                    marginBottom: '1rem',
-                                }}
-                                open={isOpen}
-                                onOpen={() => setIsOpen(true)}
-                                onClose={() => setIsOpen(false)}
-                                onChange={(event, newValue) => {
-                                    event.preventDefault()
-                                    if (newValue) {
-                                        setAutocompleteValue(newValue)
-                                        field.handleChange(newValue._id)
-                                    }
-                                }}
-                                value={autocompleteValue}
-                                options={options}
-                                loading={autocompleteLoading}
-                                isOptionEqualToValue={(option, value) =>
-                                    option._id === value._id
-                                }
-                                getOptionLabel={(option) =>
-                                    option.type + ' ' + option.serialNumber
-                                }
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Item"
-                                        variant="filled"
-                                        size="small"
-                                        sx={{
-                                            ...inputStyles,
+                    className="flex flex-col gap-5"
+                >
+                    <form.Field
+                        name="assetId"
+                        validators={{
+                            onChange: pipe(
+                                string('Asset is required'),
+                                nonEmpty('Please select an asset')
+                            ),
+                        }}
+                        children={(field) => (
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-sm font-medium text-slate-700">Available Items</label>
+                                <div className="relative">
+                                    <select
+                                        className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-blue/30 focus:border-primary-blue appearance-none"
+                                        value={autocompleteValue?._id || ''}
+                                        onChange={(e) => {
+                                            const selectedId = e.target.value
+                                            const selectedOption = options?.find((opt) => opt._id === selectedId) || null
+                                            setAutocompleteValue(selectedOption)
+                                            field.handleChange(selectedId)
                                         }}
-                                        InputLabelProps={{
-                                            style: {
-                                                color: '#4C556B',
-                                                fontFamily:
-                                                    '"Outfit", sans-serif',
-                                            },
-                                            shrink: true,
-                                        }}
-                                        InputProps={{
-                                            disableUnderline: true,
-                                            ...params.InputProps,
-                                            endAdornment: (
-                                                <>
-                                                    {autocompleteLoading ? (
-                                                        <CircularProgress
-                                                            color="inherit"
-                                                            size={20}
-                                                        />
-                                                    ) : null}
-                                                    {
-                                                        params.InputProps
-                                                            .endAdornment
-                                                    }
-                                                </>
-                                            ),
-                                        }}
-                                    />
-                                )}
-                            />
-                            {field.state.meta.errors ? (
-                                <ErrorText>
-                                    {field.state.meta.errors.join(', ')}
-                                </ErrorText>
-                            ) : null}
-                        </div>
-                    )}
-                />
-                <form.Field
-                    name="date"
-                    children={(field) => (
-                        <>
-                            <Input
-                                IsUsername
-                                name="Date"
-                                shrink
-                                label="Date"
-                                type="date"
-                                value={field.state.value}
-                                onChange={(e) =>
-                                    field.handleChange(e.target.value)
-                                }
-                            />
-                            {field.state.meta.errors ? (
-                                <ErrorText>
-                                    {field.state.meta.errors.join(', ')}
-                                </ErrorText>
-                            ) : null}
-                        </>
-                    )}
-                />
+                                        disabled={autocompleteLoading}
+                                    >
+                                        <option value="" disabled>Select an item to assign...</option>
+                                        {options?.map((option) => (
+                                            <option key={option._id} value={option._id}>
+                                                {option.type} - {option.serialNumber}
+                                            </option>
+                                        ))}
+                                    </select>
 
-                <div className={style.buttonsContainer}>
-                    <Button
-                        btnText="Assign"
-                        isSubmit
-                        type={ButtonTypes.PRIMARY}
+                                    {autocompleteLoading && (
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                            <RingLoader size={16} color="#64748b" />
+                                        </div>
+                                    )}
+                                </div>
+                                {field.state.meta.errors ? (
+                                    <ErrorText>
+                                        {field.state.meta.errors.join(', ')}
+                                    </ErrorText>
+                                ) : null}
+                            </div>
+                        )}
                     />
-                    <Button
-                        btnText="Cancel"
-                        type={ButtonTypes.SECONDARY}
-                        onClick={handleClose}
+
+                    <form.Field
+                        name="date"
+                        children={(field) => (
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-sm font-medium text-slate-700">Assignment Date</label>
+                                <input
+                                    type="date"
+                                    className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-blue/30 focus:border-primary-blue"
+                                    value={field.state.value}
+                                    onChange={(e) => field.handleChange(e.target.value)}
+                                />
+                                {field.state.meta.errors ? (
+                                    <ErrorText>
+                                        {field.state.meta.errors.join(', ')}
+                                    </ErrorText>
+                                ) : null}
+                            </div>
+                        )}
                     />
-                </div>
-            </form>
+
+                    <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-slate-100">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handleClose}
+                            className="bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            className="bg-primary-blue hover:bg-primary-blue-dark text-white shadow-sm"
+                        >
+                            Assign Item
+                        </Button>
+                    </div>
+                </form>
+            </div>
         </ModalComponent>
     )
 }

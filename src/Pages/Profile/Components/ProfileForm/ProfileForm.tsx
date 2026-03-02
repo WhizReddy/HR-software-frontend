@@ -1,4 +1,3 @@
-import { Avatar } from '@mui/material'
 import Input from '../../../../Components/Input/Index'
 import { ButtonTypes } from '../../../../Components/Button/ButtonTypes'
 import Button from '../../../../Components/Button/Button'
@@ -25,9 +24,10 @@ const ProfileFormContext = () => {
 
             <div className={style.forms}>
                 <div className={style.profile}>
-                    <Avatar
-                        src={previewImage || user.imageUrl}
-                        style={{ width: '70px', height: '70px' }}
+                    <img
+                        src={previewImage || user.imageUrl || 'https://via.placeholder.com/70'}
+                        style={{ width: '70px', height: '70px', borderRadius: '50%', objectFit: 'cover' }}
+                        alt="Profile"
                     />
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                         <div

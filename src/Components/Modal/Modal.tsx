@@ -1,56 +1,43 @@
-import { ReactNode } from 'react'
-import { Backdrop, Modal, Fade, Card } from '@mui/material'
+import React from 'react'
+import { X } from 'lucide-react'
 
-const defaultStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    bgcolor: 'background.paper',
-    boxShadow: 24,
-    p: 4,
-    borderRadius: '10px',
-}
-
-interface ModalContentProps {
-    handleClose: () => void
+interface ModalComponentProps {
     open: boolean
-    children: ReactNode
+    handleClose: () => void
+    children: React.ReactNode
     width?: string
-    padding?: string
     height?: string
+    padding?: string
 }
 
-export const ModalComponent: React.FC<ModalContentProps> = ({
-    handleClose,
+export const ModalComponent: React.FC<ModalComponentProps> = ({
     open,
+    handleClose,
     children,
     width = '500px',
-    padding = '20px',
+    height,
+    padding = '24px',
 }) => {
-    const style = {
-        ...defaultStyle,
-        width,
-        padding,
-    }
+    if (!open) return null
 
     return (
-        <Modal
-            aria-labelledby="transition-modal-title"
-            aria-describedby="transition-modal-description"
-            open={open}
-            onClose={handleClose}
-            closeAfterTransition
-            slots={{ backdrop: Backdrop }}
-            slotProps={{
-                backdrop: {
-                    timeout: 500,
-                },
-            }}
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+            onClick={handleClose}
         >
-            <Fade in={open}>
-                <Card sx={style}>{children}</Card>
-            </Fade>
-        </Modal>
+            <div
+                className="bg-white rounded-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto"
+                style={{ width, height: height || 'auto', padding }}
+                onClick={(e) => e.stopPropagation()}
+            >
+                <button
+                    onClick={handleClose}
+                    className="absolute top-3 right-3 p-1.5 rounded-full text-slate-500 hover:bg-slate-100 transition-colors"
+                >
+                    <X size={18} />
+                </button>
+                {children}
+            </div>
+        </div>
     )
 }

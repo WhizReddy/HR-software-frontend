@@ -4,11 +4,10 @@ import style from './style/userVacations.module.scss'
 import { VacationProvider } from './VacationContext'
 import { useGetUserWithVacations } from './Hook'
 import { Vacation } from './TVacation'
-import { Check, Close, AccessTime } from '@mui/icons-material'
+import { Check, X, Clock } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import dayjs from 'dayjs'
-import Button from '@/Components/Button/Button'
-import { ButtonTypes } from '@/Components/Button/ButtonTypes'
+import { Button } from '@/Components/ui/button'
 
 const UserVacationsComponent = () => {
     const { error, isError, isLoading, data } = useGetUserWithVacations()
@@ -21,19 +20,19 @@ const UserVacationsComponent = () => {
                     total: number,
                     item: {
                         endDate:
-                            | string
-                            | number
-                            | Date
-                            | dayjs.Dayjs
-                            | null
-                            | undefined
+                        | string
+                        | number
+                        | Date
+                        | dayjs.Dayjs
+                        | null
+                        | undefined
                         startDate:
-                            | string
-                            | number
-                            | Date
-                            | dayjs.Dayjs
-                            | null
-                            | undefined
+                        | string
+                        | number
+                        | Date
+                        | dayjs.Dayjs
+                        | null
+                        | undefined
                     },
                 ) => {
                     const eD = dayjs(item.endDate)
@@ -49,6 +48,7 @@ const UserVacationsComponent = () => {
 
     if (isError) return <div>Error: {error.message}</div>
     if (isLoading) return <div className={style.loading}>Loading...</div>
+    if (!data) return null
     return (
         <Card
             border="2px solid rgb(211,211,211,.5)"
@@ -82,22 +82,24 @@ const UserVacationsComponent = () => {
                         <div key={item._id} className={style.vacationContainer}>
                             {item.type}{' '}
                             {item.status === 'pending' ? (
-                                <AccessTime color="disabled" />
+                                <Clock size={20} className="text-slate-400" />
                             ) : item.status === 'accepted' ? (
-                                <Check color="success" />
+                                <Check size={20} className="text-emerald-500" />
                             ) : (
-                                <Close color="error" />
+                                <X size={20} className="text-rose-500" />
                             )}
                         </div>
                     ))}
                 </div>
-                {takenLeaveDays} days taken this year
+                <div className="text-sm font-medium text-slate-600 mt-2">
+                    {takenLeaveDays} days taken this year
+                </div>
             </div>
             <Button
-                marginTop={'.5rem'}
-                btnText={'Add Vacation'}
-                type={ButtonTypes.PRIMARY}
-            />
+                className="mt-4 w-full bg-primary-blue hover:bg-primary-blue-dark text-white shadow-sm transition-colors py-2 h-auto"
+            >
+                Add Vacation
+            </Button>
         </Card>
     )
 }

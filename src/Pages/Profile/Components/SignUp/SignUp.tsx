@@ -1,9 +1,7 @@
-import { Avatar, FormControlLabel, Checkbox } from '@mui/material'
 import Input from '../../../../Components/Input/Index'
 import { ButtonTypes } from '../../../../Components/Button/ButtonTypes'
 import Button from '../../../../Components/Button/Button'
 import style from '../ProfileForm/ProfileForm.module.css'
-import { chekboxStyles } from '../../../../Components/Input/Styles'
 import img from '../../../../Assets/gerti.jpg'
 import AxiosInstance from '../../../../Helpers/Axios'
 import { useState } from 'react'
@@ -56,7 +54,7 @@ const SignUp = () => {
     return (
         <div className={style.container}>
             <div className={style.profile}>
-                <Avatar src={img} style={{ width: '94px', height: '94px' }} />
+                <img src={img} style={{ width: '94px', height: '94px', borderRadius: '50%', objectFit: 'cover' }} alt="Profile" />
                 <div>
                     <div className={style.name}>Elisabeta Guri</div>
                     <div className={style.position}>
@@ -145,21 +143,18 @@ const SignUp = () => {
             </div>
 
             <div className={style.checkboxDiv}>
-                <FormControlLabel
-                    control={<Checkbox />}
-                    label="Public Holidays"
-                    sx={{ ...chekboxStyles }}
-                />
-                <FormControlLabel
-                    control={<Checkbox />}
-                    label="Remote"
-                    sx={{ ...chekboxStyles }}
-                />
-                <FormControlLabel
-                    control={<Checkbox />}
-                    label="External"
-                    sx={{ ...chekboxStyles }}
-                />
+                <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer accent-blue-600" />
+                    <span className="text-base font-medium text-slate-700">Public Holidays</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer accent-blue-600" />
+                    <span className="text-base font-medium text-slate-700">Remote</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer accent-blue-600" />
+                    <span className="text-base font-medium text-slate-700">External</span>
+                </label>
             </div>
             <div className={style.border}></div>
             <div className={style.inputWidth}>

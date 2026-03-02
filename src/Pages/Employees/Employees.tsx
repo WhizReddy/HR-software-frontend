@@ -2,7 +2,6 @@ import { RingLoader } from 'react-spinners'
 import DataTable from '../../Components/Table/Table'
 import { useEmployeeContext } from './Context/EmployeTableContext'
 import { EmployeeProvider } from './Context/EmployeTableProvider'
-import style from '../Payroll/styles/Payroll.module.css'
 function EmployeesContent() {
     const {
         rows,
@@ -17,10 +16,10 @@ function EmployeesContent() {
     } = useEmployeeContext()
 
     return (
-        <div className={style.payroll}>
-              {isPending ? (
-                <div className={style.ring}>
-                    <RingLoader />
+        <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-4 mt-5">
+            {isPending ? (
+                <div className="flex justify-center items-center min-h-[60vh]">
+                    <RingLoader color="#2457A3" />
                 </div>
             ) : (
                 <DataTable

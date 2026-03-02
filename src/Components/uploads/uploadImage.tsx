@@ -1,37 +1,32 @@
-import React from 'react'
+import React, { useRef } from 'react'
+import { Camera } from 'lucide-react'
 
-interface ImageProps {
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+interface UploadImageProps {
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const Image: React.FC<ImageProps> = ({ onChange }) => {
+const UploadImage: React.FC<UploadImageProps> = ({ onChange }) => {
+    const inputRef = useRef<HTMLInputElement>(null)
+
     return (
-        <div
-            style={{
-                display: 'flex',
-                justifyContent: 'center',
-            }}
-        >
+        <>
             <input
                 type="file"
-                name="image"
                 accept="image/*"
-                style={{ display: 'none' }}
-                id="imageInput"
+                ref={inputRef}
                 onChange={onChange}
+                className="hidden"
             />
-            <label
-                htmlFor="imageInput"
-                style={{
-                    cursor: 'pointer',
-                    color: '#276AFF',
-                    textDecoration: 'underline',
-                }}
+            <button
+                type="button"
+                onClick={() => inputRef.current?.click()}
+                className="flex items-center gap-2 text-xs font-medium text-[#2457a3] hover:underline mt-1"
             >
-                Choose Image
-            </label>
-        </div>
+                <Camera size={14} />
+                Change photo
+            </button>
+        </>
     )
 }
 
-export default Image
+export default UploadImage

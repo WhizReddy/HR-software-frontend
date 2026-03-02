@@ -1,22 +1,22 @@
-import { MouseEvent, useContext, useEffect } from 'react'
+import { useContext, useEffect } from 'react'
 import { VacationProvider, VacationContext } from './VacationContext'
 import { VacationTable } from './components/VacationTable'
-import style from './style/vacation.module.scss'
-import { ToggleButton, ToggleButtonGroup } from '@mui/material'
 import { EmployeesWithVacations } from './components/EmployeesWithVacations'
-import Button from '@/Components/Button/Button'
-import { ButtonTypes } from '@/Components/Button/ButtonTypes'
 import { CreateVacationForm } from './components/form/CreateVacationForm'
+import { Plus } from 'lucide-react'
+
+import { Button } from '@/Components/ui/button'
+import { ToggleGroup, ToggleGroupItem } from '@/Components/ui/toggle-group'
+import { Card } from '@/Components/ui/card'
 
 function VacationComponent() {
     const { searchParams, setSearchParams, createVacationToggler } =
         useContext(VacationContext)
-    const handleChange = (
-        event: MouseEvent<HTMLElement>,
-        newAlignment: string,
-    ) => {
-        event.preventDefault()
-        setSearchParams(new URLSearchParams({ vacationType: newAlignment }))
+
+    const handleChange = (value: string) => {
+        if (value) {
+            setSearchParams(new URLSearchParams({ vacationType: value }))
+        }
     }
 
     useEffect(() => {
@@ -24,64 +24,52 @@ function VacationComponent() {
             setSearchParams(new URLSearchParams({ vacationType: 'requests' }))
         }
     }, [searchParams, setSearchParams])
-    const pageToggleChoices = [
-        {
-            value: 'requests',
-            label: 'Requests',
-        },
-        {
-            value: 'userLeaves',
-            label: 'User Leaves',
-        },
-    ]
+
+    const currentTab = searchParams.get('vacationType') || 'requests'
 
     return (
-        <main className={style.main}>
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'end',
-                    marginTop: '1rem',
-                    marginBottom: '1rem',
-                    gap: '1rem',
-                }}
-            >
-                <ToggleButtonGroup
-                    color="primary"
-                    value={searchParams.get('vacationType')}
-                    exclusive
-                    onChange={handleChange}
-                    aria-label="Leave"
+        <div className="p-6 max-w-7xl mx-auto w-full space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+                <ToggleGroup
+                    type="single"
+                    value={currentTab}
+                    onValueChange={handleChange}
+                    className="justify-start bg-slate-100/50 p-1 rounded-lg"
                 >
-                    {pageToggleChoices.map(({ value, label }) => (
-                        <ToggleButton
-                            sx={{
-                                padding: '0.5rem 1rem',
-                                fontSize: '0.8rem',
-                            }}
-                            key={value}
-                            value={value}
-                        >
-                            {label}
-                        </ToggleButton>
-                    ))}
-                </ToggleButtonGroup>
+                    <ToggleGroupItem
+                        value="requests"
+                        className="px-6 data-[state=on]:bg-white data-[state=on]:text-primary-blue data-[state=on]:shadow-sm transition-all"
+                    >
+                        Requests
+                    </ToggleGroupItem>
+                    <ToggleGroupItem
+                        value="userLeaves"
+                        className="px-6 data-[state=on]:bg-white data-[state=on]:text-primary-blue data-[state=on]:shadow-sm transition-all"
+                    >
+                        User Leaves
+                    </ToggleGroupItem>
+                </ToggleGroup>
+
                 <Button
-                    type={ButtonTypes.PRIMARY}
-                    btnText={'Add Vacation'}
                     onClick={createVacationToggler}
-                />
+                    className="bg-primary-blue hover:bg-primary-blue-dark text-white rounded-lg px-6 w-full sm:w-auto flex items-center gap-2 transition-colors"
+                >
+                    <Plus size={18} />
+                    Add Vacation
+                </Button>
             </div>
-            {searchParams.get('createVacation') && <CreateVacationForm />}
-            <div>
-                {searchParams.get('vacationType') === 'requests' && (
-                    <VacationTable />
-                )}
-                {searchParams.get('vacationType') === 'userLeaves' && (
-                    <EmployeesWithVacations />
-                )}
-            </div>
-        </main>
+
+            {searchParams.get('createVacation') && (
+                <div className="animate-in fade-in slide-in-from-top-4">
+                    <CreateVacationForm />
+                </div>
+            )}
+
+            <Card className="bg-white shadow-sm border border-slate-100 rounded-xl overflow-hidden mt-4">
+                {currentTab === 'requests' && <VacationTable />}
+                {currentTab === 'userLeaves' && <EmployeesWithVacations />}
+            </Card>
+        </div>
     )
 }
 

@@ -1,18 +1,13 @@
 import { useEmployeesWithHoldings } from '../Hook/index.ts'
-import { CircularProgress } from '@mui/material'
 import { UserWithHoldings } from '../TAsset'
 import { useInView } from 'react-intersection-observer'
-
-import style from '../style/employeesWithHoldings.module.scss'
 import { useContext, useEffect } from 'react'
 import SimpleCollapsableCard from '@/Components/Vacation_Asset/SimpleCollapsableCard.tsx'
 import { HoldingsContext } from '../HoldingsContext.tsx'
-
-import Button from '@/Components/Button/Button.tsx'
-import { ButtonTypes } from '@/Components/Button/ButtonTypes.tsx'
+import { Button } from '@/Components/ui/button'
 import { AssignAssetModal } from './Modals/AssignAssetModal.tsx'
 import { ReturnAssetModal } from './Modals/ReturnAssetModal.tsx'
-import Toast from '@/Components/Toast/Toast.tsx'
+import { RingLoader } from 'react-spinners'
 
 export const EmployeesWithHoldings = () => {
     const {
@@ -23,7 +18,7 @@ export const EmployeesWithHoldings = () => {
         fetchNextPage,
         isFetchingNextPage,
     } = useEmployeesWithHoldings()
-    const { searchParams, setSearchParams, toastConfigs, handleToastClose } =
+    const { searchParams, setSearchParams } =
         useContext(HoldingsContext)
 
     const { ref, inView } = useInView()
@@ -49,16 +44,16 @@ export const EmployeesWithHoldings = () => {
         })
     }
 
-    if (isError) return <div>Error: {error.message}</div>
-    if (isLoading)
-        return (
-            <div className={style.loading}>
-                <CircularProgress />
-            </div>
-        )
+    if (isError) return <div className="p-4 text-red-500">Error: {error.message}</div>
+
+    if (isLoading) return (
+        <div className="flex justify-center flex-col items-center min-h-[400px]">
+            <RingLoader color="#2457A3" />
+        </div>
+    )
 
     return (
-        <div className={style.employeesContainer}>
+        <div className="flex flex-col gap-4 mt-6">
             {data?.pages.map((page) =>
                 page.data.map((user: UserWithHoldings) => (
                     <SimpleCollapsableCard
@@ -72,32 +67,36 @@ export const EmployeesWithHoldings = () => {
                                 : undefined
                         }
                     >
-                        <div className={style.collapsedData}>
-                            <div className={style.collapseDataVacationList}>
-                                <h3>Occupied items</h3>
-                                <div>
-                                    <div>
+                        <div className="p-4 mt-2 bg-slate-50 border-t border-slate-100 rounded-b-lg">
+                            <div className="flex flex-col">
+                                <h3 className="text-sm font-semibold text-slate-800 mb-3 uppercase tracking-wider">Occupied items</h3>
+                                <div className="space-y-4">
+                                    <div className="flex flex-wrap gap-2">
                                         {user.assets &&
-                                        user.assets.length > 0 ? (
+                                            user.assets.length > 0 ? (
                                             user.assets.map(({ type, _id }) => (
                                                 <p
                                                     onClick={() => {
                                                         setClickedOnHolding(_id)
                                                     }}
                                                     key={_id}
+                                                    className="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium bg-primary-blue/10 text-primary-blue hover:bg-primary-blue hover:text-white transition-colors cursor-pointer border border-primary-blue/20"
                                                 >
                                                     {type}
                                                 </p>
                                             ))
                                         ) : (
-                                            <p>No holdings</p>
+                                            <p className="text-sm text-slate-500 italic">No holdings</p>
                                         )}
                                     </div>
-                                    <Button
-                                        btnText={'Assign asset'}
-                                        type={ButtonTypes.PRIMARY}
-                                        onClick={setClickedOnAssignItem}
-                                    />
+                                    <div>
+                                        <Button
+                                            onClick={setClickedOnAssignItem}
+                                            className="bg-primary-blue hover:bg-primary-blue-dark text-white rounded-lg shadow-sm"
+                                        >
+                                            Assign asset
+                                        </Button>
+                                    </div>
                                     {searchParams.get('assignItem') && (
                                         <AssignAssetModal />
                                     )}
@@ -110,13 +109,9 @@ export const EmployeesWithHoldings = () => {
                     </SimpleCollapsableCard>
                 )),
             )}
-            <div ref={ref}>{isFetchingNextPage && 'Loading...'}</div>
-            <Toast
-                severity={toastConfigs.severity}
-                message={toastConfigs.message!}
-                open={toastConfigs.isOpen}
-                onClose={handleToastClose}
-            />
+            <div ref={ref} className="text-center py-4 text-slate-500 text-sm">
+                {isFetchingNextPage && 'Loading...'}
+            </div>
         </div>
     )
 }

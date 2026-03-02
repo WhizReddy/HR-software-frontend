@@ -1,7 +1,6 @@
 import Button from '@/Components/Button/Button'
 import { ButtonTypes } from '@/Components/Button/ButtonTypes'
 import Input from '@/Components/Input/Index'
-import { Box, Checkbox, FormControlLabel, useTheme } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { ModalComponent } from '../../../Components/Modal/Modal'
 
@@ -50,11 +49,6 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
     const [customSubject, setCustomSubject] = useState('')
     const [useCustomEmail, setUseCustomEmail] = useState(false)
 
-    const theme = useTheme()
-    const themeStyle = {
-        color: theme.palette.text.primary,
-    }
-
     useEffect(() => {
         const initialDate =
             selectedInterview.currentPhase === 'first_interview'
@@ -86,11 +80,8 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
 
     return (
         <ModalComponent open={open} handleClose={handleClose}>
-            <Box
-                component="form"
-                sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-            >
-                <h2 style={themeStyle}>
+            <form className="flex flex-col gap-4 w-full">
+                <h2 className="text-slate-800 font-semibold mb-2">
                     {isReschedule
                         ? 'Reschedule Interview'
                         : 'Schedule Interview'}
@@ -117,18 +108,15 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
                     name="notes"
                 />
 
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={useCustomEmail}
-                            onChange={(e) =>
-                                setUseCustomEmail(e.target.checked)
-                            }
-                            color="primary"
-                        />
-                    }
-                    label="Use custom email"
-                />
+                <label className="flex items-center gap-2 cursor-pointer mt-2">
+                    <input
+                        type="checkbox"
+                        checked={useCustomEmail}
+                        onChange={(e) => setUseCustomEmail(e.target.checked)}
+                        className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 accent-blue-600"
+                    />
+                    <span className="text-slate-700 font-medium">Use custom email</span>
+                </label>
 
                 {useCustomEmail && (
                     <>
@@ -176,7 +164,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
                         onClick={handleSubmit}
                     />
                 </div>
-            </Box>
+            </form>
         </ModalComponent>
     )
 }

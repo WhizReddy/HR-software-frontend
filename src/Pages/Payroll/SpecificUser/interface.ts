@@ -1,9 +1,9 @@
-import { GridColDef, GridPaginationModel } from '@mui/x-data-grid'
+import { ColDef, PaginationModel } from '@/types/table'
 import React from 'react'
 
 export interface PayrollContextType {
     rows: PayrollRowSpecifc[]
-    columns: GridColDef[]
+    columns: ColDef<PayrollRowSpecifc>[]
     headerTextColors: { [key: string]: string }
     getRowId: (row: PayrollRowSpecifc) => number
     setMonth: (month: number) => void
@@ -13,7 +13,7 @@ export interface PayrollContextType {
     page: number
     pageSize: number
     totalPages: number
-    handlePaginationModelChange: (paginationModel: GridPaginationModel) => void
+    handlePaginationModelChange: (paginationModel: PaginationModel) => void
 }
 
 export const PayrollContextSpecific = React.createContext<
@@ -22,16 +22,16 @@ export const PayrollContextSpecific = React.createContext<
 
 export interface PayrollRowSpecifc {
     id: number
-    originalId: number
-    netSalary: number
+    originalId: string | number
+    netSalary: number | string
     workingDays: number
     currency: string
     bonus: number
     bonusDescription: string
     socialSecurity: number
-    healthInsurance: number
+    healthInsurance: number | string
     grossSalary: number
-    month: number
+    month: number | string
     year: number
     userId: {
         _id: string

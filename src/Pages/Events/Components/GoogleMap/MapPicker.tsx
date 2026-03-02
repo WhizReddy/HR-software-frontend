@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api'
 import Input from '@/Components/Input/Index'
-import SearchIcon from '@mui/icons-material/Search'
+import { Search } from 'lucide-react'
 
 const mapContainerStyle = {
     width: '100%',
@@ -64,7 +64,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
                 } else {
                     console.error(
                         'Geocode was not successful for the following reason: ' +
-                            status,
+                        status,
                     )
                 }
             })
@@ -92,7 +92,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
                 } else {
                     alert(
                         'Geocode was not successful for the following reason: ' +
-                            status,
+                        status,
                     )
                 }
             })
@@ -123,7 +123,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
                     } else {
                         alert(
                             'Geocode was not successful for the following reason: ' +
-                                status,
+                            status,
                         )
                         setSearchValue(
                             `${clickedPosition.lat}, ${clickedPosition.lng}`,
@@ -157,11 +157,11 @@ const MapComponent: React.FC<MapComponentProps> = ({
                         IsUsername
                         type="text"
                         value={searchValue}
-                        onChange={(e) => setSearchValue(e.target.value)}
+                        onChange={(e: any) => setSearchValue(e.target.value)}
                         placeholder="Enter location"
                         name="Location"
                         label="Location"
-                        icon={<SearchIcon onClick={handleSearch} />}
+                        icon={<Search onClick={handleSearch} className="cursor-pointer text-slate-500" size={20} />}
                         style={{ marginBottom: '15px' }}
                     />
                 </>

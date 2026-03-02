@@ -2,36 +2,13 @@ import { ChangeEvent, useContext } from 'react'
 import { HoldingsContext } from '../HoldingsContext'
 import { debounce } from '@/Helpers/debounce'
 import Input from '@/Components/Input/Index'
-import { SearchOutlined } from '@mui/icons-material'
-import {
-    FormLabel,
-    Radio,
-    RadioGroup,
-    Sheet,
-    Box,
-    radioClasses,
-} from '@mui/joy'
-import { CssVarsProvider, extendTheme } from '@mui/joy/styles'
-// import { TooltipImproved } from '@/Components/Tooltip/Tooltip'
-
+import { Search } from 'lucide-react'
 
 export const HoldingsSearchFilter = () => {
     const { searchParams, setSearchParams } = useContext(HoldingsContext)
 
-    const theme = extendTheme({
-        components: {
-            JoyRadioGroup: {
-                styleOverrides: {
-                    root: {
-                        '--Radio-radius': '7.5px',
-                    },
-                },
-            },
-        },
-    })
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (value: string) => {
         setSearchParams((prev) => {
-            const value = e.target.value
             const newParams = new URLSearchParams(prev)
             if (newParams.get('selectedHolding')) {
                 newParams.delete('selectedHolding')
@@ -62,119 +39,56 @@ export const HoldingsSearchFilter = () => {
             return newParams
         })
     }, 500)
+
     const onSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
         debouncedSetSearchParams(e.target.value)
     }
-    const userFilterChoices = ['ALL', 'W ASSETS', 'W/O ASSETS']
+
+    const userFilterChoices = [
+        { label: 'ALL', value: 'all' },
+        { label: 'W ASSETS', value: 'with' },
+        { label: 'W/O ASSETS', value: 'without' }
+    ]
+
+    const currentUserFilter = searchParams.get('users') || 'all'
+
     return (
-        <div
-            style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                marginBottom: '1rem',
-            }}
-        >
-            <Input
-                type="search"
-                iconPosition="end"
-                icon={<SearchOutlined />}
-                IsUsername
-                label="Search"
-                name="search"
-                initialValue={searchParams.get('search') || ''}
-                onChange={onSearchChange}
-            />
-            <CssVarsProvider theme={theme}>
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                    <FormLabel
-                        id="filter-user-choices"
-                        sx={{
-                            fontWeight: 'xl',
-                            textTransform: 'uppercase',
-                            fontSize: 'xs',
-                            letterSpacing: '0.1em',
-                        }}
-                    >
-                        Filter by
-                    </FormLabel>
-                    <RadioGroup
-                        aria-labelledby="product-size-attribute"
-                        defaultValue={
-                            searchParams.get('users')
-                                ? searchParams.get('users')
-                                : 'all'
-                        }
-                        sx={{
-                            gap: 1,
-                            backgroundColor: 'transparent',
-                            flexWrap: 'wrap',
-                            flexDirection: 'row',
-                        }}
-                        onChange={handleChange}
-                    >
-                        {userFilterChoices.map((usersFilter) => (
-                            <Sheet
-                                key={usersFilter}
-                                sx={{
-                                    position: 'relative',
-                                    height: 40,
-                                    flexShrink: 0,
-                                    padding: '0.333rem 1rem',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    alignSelf: 'end',
-                                    borderRadius: 7.5,
-                                    justifyContent: 'center',
-                                    '--joy-focus-outlineOffset': '4px',
-                                    '--joy-palette-focusVisible': (theme) =>
-                                        theme.vars.palette.neutral
-                                            .outlinedBorder,
-                                    [`& .${radioClasses.checked}`]: {
-                                        [`& .${radioClasses.label}`]: {
-                                            fontWeight: 'lg',
-                                        },
-                                        [`& .${radioClasses.action}`]: {
-                                            '--variant-borderWidth': '1px',
-                                            borderColor: 'text.secondary',
-                                        },
-                                    },
-                                    [`& .${radioClasses.action}.${radioClasses.focusVisible}`]:
-                                        {
-                                            outlineWidth: '2px',
-                                        },
-                                }}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+            <div className="w-full sm:w-72">
+                <Input
+                    type="search"
+                    iconPosition="end"
+                    icon={<Search size={20} className="text-slate-400" />}
+                    IsUsername
+                    label="Search Employees"
+                    name="search"
+                    initialValue={searchParams.get('search') || ''}
+                    onChange={onSearchChange}
+                />
+            </div>
+
+            <div className="flex flex-col gap-1.5 sm:items-end">
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    Filter by
+                </span>
+                <div className="inline-flex bg-slate-100 p-1 rounded-lg border border-slate-200">
+                    {userFilterChoices.map((filter) => {
+                        const isActive = currentUserFilter === filter.value
+                        return (
+                            <button
+                                key={filter.value}
+                                onClick={() => handleChange(filter.value)}
+                                className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all duration-200 ease-in-out ${isActive
+                                        ? 'bg-white text-primary-blue shadow-sm ring-1 ring-slate-200/50'
+                                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
+                                    }`}
                             >
-                                {/* <TooltipImproved
-                                PROBLEME KUR ESHTE INSTALUAR THEME PURPLE / BLUE
-                                    text={
-                                        usersFilter === 'ALL'
-                                            ? 'All Employees'
-                                            : usersFilter === 'W ASSETS'
-                                              ? 'Employees with Assets'
-                                              : 'Employees without Assets'
-                                    }
-                                    placement="top"
-                                    offset={[0, 5]}
-                                > */}
-                                <Radio
-                                    color="neutral"
-                                    overlay
-                                    disableIcon
-                                    value={
-                                        usersFilter === 'ALL'
-                                            ? 'all'
-                                            : usersFilter === 'W ASSETS'
-                                              ? 'with'
-                                              : 'without'
-                                    }
-                                    label={usersFilter}
-                                />
-                                {/* </TooltipImproved> */}
-                            </Sheet>
-                        ))}
-                    </RadioGroup>
-                </Box>
-            </CssVarsProvider>
+                                {filter.label}
+                            </button>
+                        )
+                    })}
+                </div>
+            </div>
         </div>
     )
 }

@@ -1,116 +1,61 @@
-import * as React from 'react'
-import IconButton from '@mui/material/IconButton'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
-import { useEvents } from '@/Pages/Events/Context/EventsContext'
-import ClickAwayListener from '@mui/material/ClickAwayListener'
-import { EventsData } from '@/Pages/Events/Interface/Events'
+import React, { useState, useRef, useEffect } from 'react'
+import { MoreVertical, Pencil, Trash2 } from 'lucide-react'
 
-const ITEM_HEIGHT = 32
+interface EventsData {
+    _id: string
+    [key: string]: unknown
+}
 
-export default function LongMenu({ event }: { event: EventsData }) {
-    const { handleOpenDrawer, handleDeleteEventModal } = useEvents()
+interface LongMenuProps {
+    event: EventsData
+    onEdit?: (event: EventsData) => void
+    onDelete?: (id: string) => void
+}
 
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-    const open = Boolean(anchorEl)
+const LongMenu: React.FC<LongMenuProps> = ({ event, onEdit, onDelete }) => {
+    const [open, setOpen] = useState(false)
+    const ref = useRef<HTMLDivElement>(null)
 
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget)
-    }
-
-    const handleClose = () => {
-        setAnchorEl(null)
-    }
-
-    const handleClickAway = () => {
-        handleClose()
-    }
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (ref.current && !ref.current.contains(e.target as Node)) {
+                setOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
 
     return (
-        <ClickAwayListener onClickAway={handleClickAway}>
-            <div>
-                <IconButton
-                    aria-label="more"
-                    id="long-button"
-                    aria-controls={open ? 'long-menu' : undefined}
-                    aria-expanded={open ? 'true' : undefined}
-                    aria-haspopup="true"
-                    onClick={handleClick}
-                >
-                    <MoreVertIcon sx={{ margin: 0, padding: 0 }} />
-                </IconButton>
-                <Menu
-                    id="long-menu"
-                    MenuListProps={{
-                        'aria-labelledby': 'long-button',
-                    }}
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
-                    anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                    }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                    }}
-                    PaperProps={{
-                        style: {
-                            maxHeight: ITEM_HEIGHT * 4.5,
-                            width: '20ch',
-                            borderRadius: '10px',
-                            fontFamily: 'Outfit, sans-serif',
-                            color: 'rgb(44, 56, 68)',
-                        },
-                    }}
-                >
-                    <div>
-                        <MenuItem
-                            onClick={() => handleOpenDrawer('edit', event)}
+        <div className="relative" ref={ref}>
+            <button
+                onClick={(e) => { e.stopPropagation(); setOpen(!open) }}
+                className="p-1.5 rounded-full text-slate-500 hover:bg-slate-100 transition-colors"
+            >
+                <MoreVertical size={18} />
+            </button>
+            {open && (
+                <div className="absolute right-0 top-8 z-30 bg-white border border-slate-200 rounded-xl shadow-lg py-1 min-w-[140px]">
+                    {onEdit && (
+                        <button
+                            onClick={() => { setOpen(false); onEdit(event) }}
+                            className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
                         >
-                            <ListItemIcon>
-                                <EditIcon />
-                            </ListItemIcon>
-                            <button
-                                style={{
-                                    textDecoration: 'none',
-                                    color: 'rgb(44, 56, 68)',
-                                    border: 'none',
-                                    backgroundColor: 'transparent',
-                                    fontFamily: 'Outfit, sans-serif',
-                                    fontSize: '18px',
-                                }}
-                            >
-                                Edit
-                            </button>
-                        </MenuItem>
-                        <MenuItem
-                            onClick={() => handleDeleteEventModal(event._id)}
+                            <Pencil size={15} /> Edit
+                        </button>
+                    )}
+                    {onDelete && (
+                        <button
+                            onClick={() => { setOpen(false); onDelete(event._id) }}
+                            className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
                         >
-                            <ListItemIcon>
-                                <DeleteIcon />
-                            </ListItemIcon>
-                            <button
-                                style={{
-                                    textDecoration: 'none',
-                                    color: '#3C3A3B',
-                                    border: 'none',
-                                    backgroundColor: 'transparent',
-                                    fontFamily: 'Outfit, sans-serif',
-                                    fontSize: '18px',
-                                }}
-                            >
-                                Delete
-                            </button>
-                        </MenuItem>
-                    </div>
-                </Menu>
-            </div>
-        </ClickAwayListener>
+                            <Trash2 size={15} /> Delete
+                        </button>
+                    )}
+                </div>
+            )}
+        </div>
     )
 }
+
+export default LongMenu

@@ -1,15 +1,15 @@
 import React from 'react'
 import { CandidateContext, CandidateRow } from '../Interfaces/Candidate'
-import { GridPaginationModel, GridRenderCellParams, GridRowParams } from '@mui/x-data-grid'
+import { PaginationModel, RenderCellParams } from '@/types/table'
 import { Link, useNavigate } from 'react-router-dom'
 import { StatusBadge } from '@/Components/StatusBadge/StatusBadge'
 import AxiosInstance from '@/Helpers/Axios'
 import { useQuery } from '@tanstack/react-query'
 
-export const CandidateProvider: React.FC<{ children: any }> = ({children}) => {
+export const CandidateProvider: React.FC<{ children: any }> = ({ children }) => {
     const [page, setPage] = React.useState(0)
     const [pageSize, setPageSize] = React.useState(5)
-    const handlePaginationModelChange = (model: GridPaginationModel) => {
+    const handlePaginationModelChange = (model: PaginationModel) => {
         setPage(model.page)
         setPageSize(model.pageSize)
     }
@@ -29,7 +29,10 @@ export const CandidateProvider: React.FC<{ children: any }> = ({children}) => {
     const rows: CandidateRow[] =
         applicants?.data.map((applicant, index) => ({
             id: page * pageSize + index + 1,
+            _id: applicant._id,
             originalId: applicant._id,
+            firstName: applicant.firstName,
+            lastName: applicant.lastName,
             fullName: `${applicant.firstName} ${applicant.lastName}`,
             email: applicant.email,
             phoneNumber: applicant.phoneNumber,
@@ -46,8 +49,9 @@ export const CandidateProvider: React.FC<{ children: any }> = ({children}) => {
         { field: 'id', headerName: 'ID', flex: 0.5 },
         { field: 'fullName', headerName: 'FullName', flex: 1.2 },
         { field: 'email', headerName: 'Email', flex: 2 },
-        { field: 'status', headerName: 'Status', flex: 1.3,
-            renderCell: (params: GridRenderCellParams) => {
+        {
+            field: 'status', headerName: 'Status', flex: 1.3,
+            renderCell: (params: RenderCellParams<CandidateRow>) => {
                 const color =
                     params.value === 'active'
                         ? 'green'
@@ -64,8 +68,9 @@ export const CandidateProvider: React.FC<{ children: any }> = ({children}) => {
         { field: 'phoneNumber', headerName: 'Phone', flex: 1.8 },
         { field: 'positionApplied', headerName: 'Position', flex: 1.8, },
         { field: 'experience', headerName: 'Experience', flex: 1.3 },
-        { field: 'actions', headerName: 'Actions', flex: 1.3,
-            renderCell: (params: GridRenderCellParams) => (
+        {
+            field: 'actions', headerName: 'Actions', flex: 1.3,
+            renderCell: (params: RenderCellParams<CandidateRow>) => (
                 <Link
                     style={{ textDecoration: 'none', color: '#4C556B' }}
                     to={`/view/${params.row.originalId}`}
@@ -79,7 +84,7 @@ export const CandidateProvider: React.FC<{ children: any }> = ({children}) => {
 
     const getRowId = (row: CandidateRow) => row.id
 
-    const handleRowClick = (params: GridRowParams) => {
+    const handleRowClick = (params: { row: CandidateRow }) => {
         navigate(`/view/${params.row.originalId}`)
     }
 

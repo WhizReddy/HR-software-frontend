@@ -1,4 +1,3 @@
-import { Backdrop, Modal, Fade, Card, CircularProgress } from '@mui/material'
 import { useContext } from 'react'
 import { VacationContext } from '../../VacationContext'
 import { useGetVacation } from '../../Hook'
@@ -9,41 +8,40 @@ export const SelectedVacationModal = () => {
         useContext(VacationContext)
 
     const vacation = useGetVacation()
+    const isOpen = searchParams.get('selectedVacation') !== null
 
-    if (vacation.isLoading) return <CircularProgress />
-    if (vacation.error) return <div>Error: {vacation.error.message}</div>
+    if (!isOpen) return null
+    if (vacation.isLoading) {
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                <div className="bg-white p-6 rounded-xl shadow-xl flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-blue"></div>
+                </div>
+            </div>
+        )
+    }
+
+    if (vacation.error) {
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                <div className="bg-white p-6 rounded-xl shadow-xl text-red-500">
+                    Error: {vacation.error.message}
+                </div>
+            </div>
+        )
+    }
 
     return (
-        <Modal
-            aria-labelledby="transition-modal-title"
-            aria-describedby="transition-modal-description"
-            open={searchParams.get('selectedVacation') !== null}
-            onClose={handleClose}
-            closeAfterTransition
-            slots={{ backdrop: Backdrop }}
-            slotProps={{
-                backdrop: {
-                    timeout: 500,
-                },
-            }}
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+            onClick={handleClose}
         >
-            <Fade in={searchParams.get('selectedVacation') !== null}>
-                <Card
-                    sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        bgcolor: 'background.paper',
-                        boxShadow: 24,
-                        p: 4,
-                        borderRadius: '10px',
-                        width: '33vw',
-                    }}
-                >
-                    <UpdateVacationForm data={vacation} />
-                </Card>
-            </Fade>
-        </Modal>
+            <div
+                className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 relative"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <UpdateVacationForm data={vacation} />
+            </div>
+        </div>
     )
 }

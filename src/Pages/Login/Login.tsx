@@ -1,18 +1,23 @@
 import { useContext, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/Context/AuthProvider'
 import { LoginContext, LoginProvider } from './LoginContext'
 import { useFormLogin } from './Hook'
 import { LoginSchema } from '@/Schemas/Login/Login.schema'
-import img from '/Images/HeroImage.png'
-import logo from '/Images/image_1-removebg-preview.png'
-import Card from '@/Components/Card/Card'
-import Input from '@/Components/Input/Index'
-import Button from '@/Components/Button/Button'
 import { RingLoader } from 'react-spinners'
-import { ButtonTypes } from '@/Components/Button/ButtonTypes'
 import { ErrorText } from '@/Components/Error/ErrorTextForm'
-import style from './styles/Login.module.css'
+import { Eye, EyeOff } from 'lucide-react'
+
+import { Button } from "@/Components/ui/button"
+import { Input } from "@/Components/ui/input"
+import { Label } from "@/Components/ui/label"
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/Components/ui/card"
 
 const LoginComponent = () => {
     const { isAuthenticated } = useAuth()
@@ -39,107 +44,114 @@ const LoginComponent = () => {
 
     if (checkingIsAuthenticated)
         return (
-            <div className={style.checkIsAuthenticated}>
-                <RingLoader />
+            <div className="min-h-screen flex items-center justify-center bg-slate-50">
+                <RingLoader color="#2457A3" />
             </div>
         )
 
     return (
-        <div className={style.container}>
-            <div className={style.content}>
-                <img className={style.img} alt="img" src={img} />
-                <Link className={style.slogan} to="/">
-                    Code With Love
-                </Link>
-            </div>
-            <Card padding="30px" gap="20px">
-                <div className={style.cardLogoStyle}>
-                    <img className={style.img2} alt="img" src={logo} />
-                </div>
-                <div className={style.title}>Login</div>
-                <form
-                    className={style.formStyle}
-                    onSubmit={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        form.handleSubmit()
-                    }}
-                >
-                    <form.Field
-                        name="email"
-                        validators={{
-                            onChange: LoginSchema.entries.email,
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+            <Card className="w-full max-w-md shadow-lg border-0">
+                <CardHeader className="space-y-1 items-center justify-center pb-8 pt-8">
+                    <div className="bg-primary-blue text-white w-20 h-20 rounded-2xl flex items-center justify-center mb-4 shadow-md rotate-3 transition-transform hover:rotate-0">
+                        <h2 className="text-3xl font-extrabold tracking-wider">CRM</h2>
+                    </div>
+                    <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
+                    <CardDescription className="text-slate-500">
+                        HR Management System
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form
+                        className="space-y-6"
+                        onSubmit={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            form.handleSubmit()
                         }}
-                        children={(field) => (
-                            <div>
-                                <Input
-                                    label="Email"
-                                    name="email"
-                                    IsUsername
-                                    width="350px"
-                                    type="email"
-                                    value={field.state.value}
-                                    onChange={(e) =>
-                                        field.handleChange(e.target.value)
-                                    }
-                                />
+                    >
+                        <form.Field
+                            name="email"
+                            validators={{
+                                onChange: LoginSchema.entries.email,
+                            }}
+                            children={(field) => (
+                                <div className="space-y-2">
+                                    <Label htmlFor="email" className="text-slate-700 font-medium">Email Address</Label>
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        placeholder="name@company.com"
+                                        value={field.state.value}
+                                        onChange={(e) =>
+                                            field.handleChange(e.target.value)
+                                        }
+                                        className="h-11 focus-visible:ring-primary-blue"
+                                    />
+                                    {field.state.meta.errors && (
+                                        <ErrorText>
+                                            {field.state.meta.errors.join(', ')}
+                                        </ErrorText>
+                                    )}
+                                </div>
+                            )}
+                        />
 
-                                {field.state.meta.errors && (
-                                    <ErrorText>
-                                        {field.state.meta.errors.join(', ')}
-                                    </ErrorText>
-                                )}
+                        <form.Field
+                            name="password"
+                            validators={{
+                                onChange: LoginSchema.entries.password,
+                            }}
+                            children={(field) => (
+                                <div className="space-y-2">
+                                    <Label htmlFor="password" className="text-slate-700 font-medium">Password</Label>
+                                    <div className="relative">
+                                        <Input
+                                            id="password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            placeholder="••••••••"
+                                            value={field.state.value}
+                                            onChange={(e) =>
+                                                field.handleChange(e.target.value)
+                                            }
+                                            className="h-11 focus-visible:ring-primary-blue pr-10"
+                                        />
+                                        <button
+                                            type="button"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                        >
+                                            {showPassword ? (
+                                                <EyeOff className="h-4 w-4" />
+                                            ) : (
+                                                <Eye className="h-4 w-4" />
+                                            )}
+                                        </button>
+                                    </div>
+                                    {field.state.meta.errors && (
+                                        <ErrorText>
+                                            {field.state.meta.errors}
+                                        </ErrorText>
+                                    )}
+                                </div>
+                            )}
+                        />
+
+                        <Button
+                            type="submit"
+                            className="w-full h-11 bg-primary-blue hover:bg-primary-blue-dark text-white font-medium text-base rounded-md transition-colors"
+                            disabled={form.state.isSubmitting}
+                        >
+                            {form.state.isSubmitting ? 'Logging in...' : 'Login'}
+                        </Button>
+
+                        {error && (
+                            <div className="p-3 mt-4 bg-red-50 border border-red-200 rounded-md">
+                                <ErrorText className="text-center w-full block m-0">{error}</ErrorText>
                             </div>
                         )}
-                    />
-
-                    <form.Field
-                        name="password"
-                        validators={{
-                            onChange: LoginSchema.entries.password,
-                        }}
-                        children={(field) => (
-                            <div>
-                                <Input
-                                    label={'Password'}
-                                    id="outlined-adornment-password"
-                                    name="password"
-                                    type={showPassword}
-                                    onClick={() =>
-                                        setShowPassword(!showPassword)
-                                    }
-                                    width="350px"
-                                    isPassword
-                                    value={field.state.value}
-                                    onChange={(e) =>
-                                        field.handleChange(e.target.value)
-                                    }
-                                />
-                                {field.state.meta.errors && (
-                                    <ErrorText>
-                                        {field.state.meta.errors}
-                                    </ErrorText>
-                                )}
-                            </div>
-                        )}
-                    />
-                    <Button
-                        type={
-                            !form.state.isSubmitting
-                                ? ButtonTypes.PRIMARY
-                                : ButtonTypes.DISABLED
-                        }
-                        isSubmit
-                        btnText={
-                            !form.state.isSubmitting ? 'Login' : 'Logging in...'
-                        }
-                    />
-                    {error && <ErrorText>{error}</ErrorText>}
-                </form>
-
-                <Link to="/forgot-password" className={style.forgotPassword}>
-                    Forgot your password?
-                </Link>
+                    </form>
+                </CardContent>
             </Card>
         </div>
     )

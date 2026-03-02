@@ -4,8 +4,7 @@ import Input from '../../Components/Input/Index'
 import logo from '/Images/recruitmentLogo.png'
 import image from '/Images/Vector-illustration-of-communication-Graphics-69695603-1-removebg-preview.png'
 import Card from '../../Components/Card/Card'
-import Button from '@mui/material/Button'
-import CloudUploadIcon from '@mui/icons-material/CloudUpload'
+import { UploadCloud } from 'lucide-react'
 import { ErrorText } from '@/Components/Error/ErrorTextForm'
 import { useContext } from 'react'
 import Toast from '@/Components/Toast/Toast'
@@ -45,7 +44,7 @@ function RecruitmentBase() {
             >
                 <div className={style.header}>
                     <img className={style.companyLogo} alt="img" src={logo} />
-                    <div className={style.title}>Apply to Codevider</div>
+                    <div className={style.title}>Apply to CRM</div>
                 </div>
                 <form
                     onSubmit={(e) => {
@@ -73,7 +72,7 @@ function RecruitmentBase() {
                                     name="firstName"
                                     IsUsername
                                     value={value}
-                                    onChange={(e) =>
+                                    onChange={(e: any) =>
                                         handleChange(e.target.value)
                                     }
                                 />
@@ -101,7 +100,7 @@ function RecruitmentBase() {
                                     name="lastName"
                                     IsUsername
                                     value={value}
-                                    onChange={(e) =>
+                                    onChange={(e: any) =>
                                         handleChange(e.target.value)
                                     }
                                 />
@@ -128,7 +127,7 @@ function RecruitmentBase() {
                                     name="Email"
                                     IsUsername
                                     value={value}
-                                    onChange={(e) =>
+                                    onChange={(e: any) =>
                                         handleChange(e.target.value)
                                     }
                                 />
@@ -158,7 +157,7 @@ function RecruitmentBase() {
                                     type="date"
                                     shrink={true}
                                     value={value}
-                                    onChange={(e) =>
+                                    onChange={(e: any) =>
                                         handleChange(e.target.value)
                                     }
                                 />
@@ -191,7 +190,7 @@ function RecruitmentBase() {
                                     name="phoneNumber"
                                     IsUsername
                                     value={value}
-                                    onChange={(e) =>
+                                    onChange={(e: any) =>
                                         handleChange(e.target.value)
                                     }
                                 />
@@ -216,7 +215,7 @@ function RecruitmentBase() {
                         }) => (
                             <div>
                                 <Selecter
-                                     width='100%'
+                                    width='100%'
 
                                     label="Applying Method"
                                     name="applicationMethod"
@@ -251,7 +250,7 @@ function RecruitmentBase() {
                                     name="positionApplied"
                                     IsUsername
                                     value={value}
-                                    onChange={(e) =>
+                                    onChange={(e: any) =>
                                         handleChange(e.target.value)
                                     }
                                 />
@@ -280,7 +279,7 @@ function RecruitmentBase() {
                                     name="salaryExpectations"
                                     IsUsername
                                     value={value}
-                                    onChange={(e) =>
+                                    onChange={(e: any) =>
                                         handleChange(e.target.value)
                                     }
                                 />
@@ -303,7 +302,7 @@ function RecruitmentBase() {
                         }) => (
                             <div className={style.spanTwoDiv}>
                                 <Selecter
-                                width='100%'
+                                    width='100%'
                                     multiple={false}
                                     label="Experience"
                                     name="experience"
@@ -333,7 +332,7 @@ function RecruitmentBase() {
                         }) => (
                             <div className={style.spanTwoDiv}>
                                 <Selecter
-                                 width='100%'
+                                    width='100%'
 
                                     options={technologies}
                                     multiple
@@ -373,23 +372,13 @@ function RecruitmentBase() {
                         }) => (
                             <div className={style.fileInput}>
                                 <p>{fileName || 'No file selected'}</p>
-                                <Button
-                                    component="label"
-                                    variant="contained"
-                                    startIcon={<CloudUploadIcon />}
-                                    style={{
-                                        backgroundColor: '#2469FF',
-                                        color: '#FFFFFF',
-                                        boxShadow: 'none',
-                                        fontFamily: 'Outfit, sans-serif',
-                                    }}
-                                    fullWidth
-                                >
+                                <label className="flex items-center justify-center gap-2 cursor-pointer w-full py-2 px-4 rounded-md text-white font-medium" style={{ backgroundColor: '#2469FF', fontFamily: 'Outfit, sans-serif' }}>
+                                    <UploadCloud size={20} />
                                     Upload CV
                                     <input
                                         type="file"
-                                        style={{ display: 'none' }}
-                                        onChange={(e) => {
+                                        className="hidden"
+                                        onChange={(e: any) => {
                                             const file =
                                                 e.target.files?.[0] || null
                                             setFileName(file?.name || null)
@@ -398,7 +387,7 @@ function RecruitmentBase() {
                                         accept=".pdf,.doc,.docx"
                                         ref={fileInputRef}
                                     />
-                                </Button>
+                                </label>
                                 {<ErrorRenderer errors={errors} />}
                             </div>
                         )}

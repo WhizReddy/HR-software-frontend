@@ -59,14 +59,6 @@ export interface InterviewContextType {
     filteredInterviews: Interview[]
     isFiltered: boolean
 
-
-   fetchFilteredInterviews: (
-    currentPhase?: string,
-    status?: string,
-    startDate?: Date,
-    endDate?: Date,
-) => Promise<Interview[]>
-
     setFilteredInterviews: Dispatch<React.SetStateAction<Interview[]>>
     scheduleType: 'schedule' | 'reschedule'
     setScheduleType: Dispatch<React.SetStateAction<'schedule' | 'reschedule'>>

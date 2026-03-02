@@ -1,56 +1,24 @@
-import Skeleton from '@mui/material/Skeleton'
-import Stack from '@mui/material/Stack'
-import Box from '@mui/material/Box'
+import React from 'react'
 
-export default function EventsContentLoader() {
+const EventsContentLoader: React.FC = () => {
     return (
-        <Box
-            sx={{
-                marginBottom: '16px',
-                boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-                borderRadius: '8px',
-                padding: '16px',
-                backgroundColor: '#fff',
-            }}
-        >
-            <Stack spacing={2}>
-
-                <Skeleton
-                    variant="text"
-                    sx={{ fontSize: '1.5rem', width: '60%' }}
-                />
-
-            
-                <Skeleton
-                    variant="text"
-                    sx={{ fontSize: '1rem', width: '80%' }}
-                />
-
-             
-                <Skeleton
-                    variant="rectangular"
-                    sx={{ width: '100%', height: '24px' }}
-                />
-
-                <Skeleton
-                    variant="rectangular"
-                    sx={{ width: '100%', height: '24px' }}
-                />
-
-             
-                <Skeleton
-                    variant="rectangular"
-                    sx={{ width: '100%', height: '30px', borderRadius: '16px' }}
-                />
-
-       
-                <Skeleton
-                    variant="circular"
-                    width={24}
-                    height={24}
-                    sx={{ position: 'absolute', top: 16, right: 16 }}
-                />
-            </Stack>
-        </Box>
+        <div className="flex flex-col gap-4 w-full">
+            {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                    key={i}
+                    className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm animate-pulse"
+                >
+                    <div className="h-4 bg-slate-200 rounded w-3/4 mb-3" />
+                    <div className="h-3 bg-slate-100 rounded w-full mb-2" />
+                    <div className="h-3 bg-slate-100 rounded w-5/6 mb-4" />
+                    <div className="flex gap-2">
+                        <div className="h-3 bg-slate-100 rounded w-24" />
+                        <div className="h-3 bg-slate-100 rounded w-16" />
+                    </div>
+                </div>
+            ))}
+        </div>
     )
 }
+
+export default EventsContentLoader

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { PayrollContext, PayrollRow } from '../Interface/Payroll'
-import { GridPaginationModel, GridRowParams } from '@mui/x-data-grid'
+import { PaginationModel } from '@/types/table'
 import { useNavigate } from 'react-router-dom'
 import AxiosInstance from '@/Helpers/Axios'
 import { useQuery } from '@tanstack/react-query'
@@ -25,7 +25,7 @@ export const PayrollProvider: React.FC<{ children: React.ReactNode }> = ({
     const [page, setPage] = useState(0)
     const [pageSize, setPageSize] = useState(5)
 
-    const handlePaginationModelChange = (model: GridPaginationModel) => {
+    const handlePaginationModelChange = (model: PaginationModel) => {
         setPage(model.page)
         setPageSize(model.pageSize)
     }
@@ -81,7 +81,7 @@ export const PayrollProvider: React.FC<{ children: React.ReactNode }> = ({
             bonusDescription: payrollItem.bonusDescription,
             currency: payrollItem.currency,
             bonus: payrollItem.bonus,
-            userId: payrollItem.userId._id,
+            userId: payrollItem.userId,
         })) ?? []
 
     const columns = [
@@ -103,7 +103,7 @@ export const PayrollProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const getRowId = (row: PayrollRow) => row.id
 
-    const handleRowClick = (params: GridRowParams) => { navigate(`/payroll/user/${params.row.originalId}`) }
+    const handleRowClick = (params: { row: PayrollRow }) => { navigate(`/payroll/user/${params.row.originalId}`) }
 
     const contextValue = {
         rows,

@@ -2,7 +2,6 @@ import { Navigate, Outlet } from 'react-router-dom'
 import { SideBar } from '../Components/SideBar/sidebar'
 import SidebarHeaderProvider from './SidebarHeaderContext'
 import { BreadcrumbComponent } from '@/Components/BreadCrumbs/BreadCrumbs'
-import { useTheme } from '@mui/material/styles'
 import Header from '@/Components/Header/header'
 
 const PrivateRoute = () => {
@@ -11,27 +10,19 @@ const PrivateRoute = () => {
     if (!isAuthenticated) {
         return <Navigate to="/" />
     }
-    const theme = useTheme()
 
     return (
         <>
             <SidebarHeaderProvider>
-                <Header />
-                <div style={{ display: 'flex' }}>
+                <div className="flex h-screen overflow-hidden bg-slate-50">
                     <SideBar />
-                    <main
-                        style={{
-                            backgroundColor: theme.palette.background.default,
-                            color: theme.palette.text.primary,
-                            width: '100%',
-                            minHeight: '100vh',
-                            height: '100%',
-                            padding: '20px',
-                        }}
-                    >
-                        <BreadcrumbComponent />
-                        <Outlet />
-                    </main>
+                    <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+                        <Header />
+                        <main className="flex-1 overflow-y-auto p-6">
+                            <BreadcrumbComponent />
+                            <Outlet />
+                        </main>
+                    </div>
                 </div>
             </SidebarHeaderProvider>
         </>

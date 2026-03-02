@@ -1,124 +1,36 @@
-import { useContext, useState } from 'react'
-import {    Logout as LogoutIcon,
-    PermIdentity as PermIdentityIcon,
-    Menu as MenuIcon,
-} from '@mui/icons-material'
-import codeviderLogo from '/Images/codevider.png'
-import style from './header.module.css'
-import { useAuth } from '../../Context/AuthProvider'
-import { Link, useNavigate } from 'react-router-dom'
-import { SidebarHeaderContext } from '@/Context/SidebarHeaderContext'
-import { EventsProvider } from '@/Pages/Events/Context/EventsContext'
-import NotificationDropdown from '@/Pages/Notification/Notification'
-import { ClickAwayListener } from '@mui/material'
-import ThemeSwitcher from '@/Theme/ThemeSwitcher'
-import { useTheme } from '@mui/material/styles' 
+import React, { useContext } from 'react'
+import { SidebarHeaderContext } from '../../Context/SidebarHeaderContext'
+import { Menu } from 'lucide-react'
+import NotificationDropdown from '../../Pages/Notification/Notification'
+import { useAuth } from '@/Context/AuthProvider'
 
-export const HeaderContent = () => {
-    const { isSidebarOpen: isOpen, toggleSidebar } =
-        useContext(SidebarHeaderContext)
-    const [showDropdown, setShowDropdown] = useState(false)
+export const Header: React.FC = () => {
+    const { toggleSidebar } = useContext(SidebarHeaderContext)
+    const { currentUser } = useAuth()
 
-    const navigate = useNavigate()
-
-    const { logout, currentUser } = useAuth()
-
-    const handleLogout = () => {
-        logout()
-        navigate('/')
-    }
-
-    const handleProfileClick = () => {
-        navigate(`/profile/${currentUser?._id}`)
-    }
-
-    const theme = useTheme()
-    const dropdownItemStyle = {
-        color: theme.palette.text.primary,
-        backgroundColor: theme.palette.background.paper,
-    }
+    const initials = currentUser
+        ? `${currentUser.firstName?.charAt(0) ?? ''}${currentUser.lastName?.charAt(0) ?? ''}`
+        : 'U'
 
     return (
-        <nav className={style.header}>
-            <div className={style.headerLeft}>
-                <div onClick={toggleSidebar} className={style.hamburgerIcon}>
-                    <MenuIcon />
+        <header className="flex items-center justify-between h-14 px-5 bg-white border-b border-slate-100 sticky top-0 z-20 shadow-[0_1px_6px_rgba(0,0,0,0.04)]">
+            {/* Left: hamburger toggle */}
+            <button
+                onClick={toggleSidebar}
+                className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors"
+            >
+                <Menu size={20} />
+            </button>
+
+            {/* Right: notifications + avatar */}
+            <div className="flex items-center gap-3">
+                <NotificationDropdown />
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#2457a3] to-[#4A7BCD] flex items-center justify-center text-white text-xs font-bold shadow-sm cursor-pointer">
+                    {initials}
                 </div>
-                <img
-                    alt="logo"
-                    src={codeviderLogo}
-                    style={{
-                        width: '35px',
-                        height: 'auto',
-                    }}
-                />
-                {isOpen && (
-                    <h3 className={style.title}>
-                        <Link to={'/dashboard'}>
-                            <span>Code</span>
-                            Vider
-                        </Link>
-                    </h3>
-                )}
             </div>
-            <div className={style.headerRight}>
-                <ThemeSwitcher />
-
-                <div className={style.icon}>
-                    <NotificationDropdown />
-                </div>
-
-                <ClickAwayListener onClickAway={() => setShowDropdown(false)}>
-                    <div
-                        className={style.icon}
-                        onClick={() => setShowDropdown(true)}
-                    >
-                        <img
-                            src={currentUser?.imageUrl}
-                            style={{
-                                cursor: 'pointer',
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '50%',
-                            }}
-                        />
-                        <div className={style.username}></div>
-
-                        {showDropdown && (
-                            <div className={style.dropdown}>
-                                <div
-                                    className={style.dropdownItem}
-                                    style={dropdownItemStyle}
-                                    onClick={handleProfileClick}
-                                >
-                                    Profile <PermIdentityIcon />
-                                </div>
-
-                                <div
-                                    className={style.dropdownItem}
-                                    style={dropdownItemStyle}
-                                    onClick={handleLogout}
-                                >
-                                    Logout <LogoutIcon />
-                                </div>
-                                <div
-                                    className={style.dropdownItem}
-                                    style={dropdownItemStyle}
-                                ></div>
-                            </div>
-                        )}
-                    </div>
-                </ClickAwayListener>
-            </div>
-        </nav>
+        </header>
     )
 }
 
-const Header: React.FC = () => {
-    return (
-        <EventsProvider>
-            <HeaderContent />
-        </EventsProvider>
-    )
-}
 export default Header

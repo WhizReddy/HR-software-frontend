@@ -11,7 +11,7 @@ import {
     EventsData,
 } from './Hook'
 import { ModalComponent } from '@/Components/Modal/Modal'
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
+import { MoreHorizontal } from 'lucide-react'
 import { useAuth } from '@/Context/AuthProvider'
 import Workers from '/public/Images/happy workers.webp'
 import worker3 from '/public/Images/happyWork3.jpeg'
@@ -125,14 +125,16 @@ export const Careers = () => {
                                 </div>
                                 {isAdmin ? (
                                     <div className={style.dropdownContainer}>
-                                        <MoreHorizIcon
-                                            onClick={() =>
-                                                toggleDropdown(
-                                                    event._id.toString(),
-                                                )
-                                            }
-                                            className={style.moreIcon}
-                                        />
+                                        <button className="flex items-center justify-center p-1 rounded hover:bg-slate-100 transition-colors">
+                                            <MoreHorizontal
+                                                onClick={() =>
+                                                    toggleDropdown(
+                                                        event._id.toString(),
+                                                    )
+                                                }
+                                                className={style.moreIcon}
+                                            />
+                                        </button>
                                         {openDropdown === event._id && (
                                             <div className={style.dropdownMenu}>
                                                 <button
@@ -301,9 +303,7 @@ export const Careers = () => {
 
                 <div className={style.footer}>
                     <p>
-                        &copy; 2024{' '}
-                        <a href="https://www.codevider.com/">Codevider. </a>All
-                        rights reserved.
+                        &copy; 2024 CRM. All rights reserved.
                     </p>
                     <p>
                         Follow us on <a href="#">LinkedIn</a>.

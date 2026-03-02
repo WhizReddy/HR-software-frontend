@@ -6,7 +6,6 @@ import { ButtonTypes } from '../../Components/Button/ButtonTypes';
 import { ModalComponent } from '../../Components/Modal/Modal';
 import Input from '@/Components/Input/Index';
 import { useState } from 'react';
-import { Checkbox, FormControlLabel } from '@mui/material';
 
 export default function ViewCandidats() {
     const {
@@ -40,7 +39,7 @@ export default function ViewCandidats() {
         }
         return age;
     };
-    const [useCustomEmail, setUseCustomEmail] = useState(false) 
+    const [useCustomEmail, setUseCustomEmail] = useState(false)
 
 
     return (
@@ -132,13 +131,12 @@ export default function ViewCandidats() {
                         <div className={style.centerStatus}>
                             <div className={style.label}>Status</div>
                             <div
-                                className={`${style.value} ${
-                                    applicant?.status === 'active'
-                                        ? style.statusActive
-                                        : applicant?.status === 'rejected'
-                                          ? style.statusRejected
-                                          : ''
-                                }`}
+                                className={`${style.value} ${applicant?.status === 'active'
+                                    ? style.statusActive
+                                    : applicant?.status === 'rejected'
+                                        ? style.statusRejected
+                                        : ''
+                                    }`}
                             >
                                 {applicant?.status}
                             </div>
@@ -252,43 +250,42 @@ export default function ViewCandidats() {
                             name="interviewDate"
                             label="Date"
                             value={firstInterviewDate}
-                            onChange={(e) =>
+                            onChange={(e: any) =>
                                 setFirstInterviewDate(e.target.value)
                             }
                         />
-                          <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={useCustomEmail}
-                            onChange={(e) => setUseCustomEmail(e.target.checked)}
-                            color="primary"
-                        />
-                    }
-                    label="Use custom email"
-                />{useCustomEmail && (
-                    <>
-                        <Input
-                            IsUsername
-                            type="textarea"
-                            name="costumMessage"
-                            label="Message"
-                            multiline
-                            rows={3}
-                            value={customMessage}
-                            onChange={(e) => setCustomMessage(e.target.value)}
-                        />
-                        <Input
-                            IsUsername
-                            type="textarea"
-                            name="customSubject"
-                            label="Message"
-                            multiline
-                            rows={3}
-                            value={customSubject}
-                            onChange={(e) => setCustomSubject(e.target.value)}
-                        />
-                         </>
-                )}
+                        <label className="flex items-center gap-2 cursor-pointer pt-2">
+                            <input
+                                type="checkbox"
+                                checked={useCustomEmail}
+                                onChange={(e) => setUseCustomEmail(e.target.checked)}
+                                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 cursor-pointer accent-blue-600"
+                            />
+                            <span className="text-sm font-medium text-slate-700">Use custom email</span>
+                        </label>{useCustomEmail && (
+                            <>
+                                <Input
+                                    IsUsername
+                                    type="textarea"
+                                    name="costumMessage"
+                                    label="Message"
+                                    multiline
+                                    rows={3}
+                                    value={customMessage}
+                                    onChange={(e: any) => setCustomMessage(e.target.value)}
+                                />
+                                <Input
+                                    IsUsername
+                                    type="textarea"
+                                    name="customSubject"
+                                    label="Message"
+                                    multiline
+                                    rows={3}
+                                    value={customSubject}
+                                    onChange={(e: any) => setCustomSubject(e.target.value)}
+                                />
+                            </>
+                        )}
                         <div
                             style={{
                                 display: 'flex',
@@ -296,7 +293,7 @@ export default function ViewCandidats() {
                                 marginTop: '20px',
                             }}
                         >
-                           
+
                             <Button
                                 type={ButtonTypes.PRIMARY}
                                 btnText="Send"

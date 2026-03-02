@@ -1,54 +1,50 @@
-import style from '../style/infoSection.module.css'
 import { EventsData } from '../../Events/Interface/Events'
 import dayjs from 'dayjs'
 import AxiosInstance from '@/Helpers/Axios'
 import { useQuery } from '@tanstack/react-query'
+
 const InfoSection: React.FC = () => {
-    const fetchEventsDashboard = async () => {
-        const response = await AxiosInstance.get(`/event`)
-
-        console.log('Fetched eventsDahboardddd:', response.data)
-        return response.data
-    }
-
     const { data: events } = useQuery({
         queryKey: ['event'],
-        queryFn: () => fetchEventsDashboard(),
+        queryFn: async () => {
+            const response = await AxiosInstance.get(`/event`)
+            return response.data
+        },
     })
 
-    console.log('events', events)
-
     return (
-        <div className={style.infoSection}>
-            <h2>Upcoming Events</h2>
-            <ul
-                style={{
-                    padding: 0,
-                }}
-            >
+        <div className="flex flex-col h-full">
+            <h2 className="text-xl font-bold text-slate-800 mb-4">Upcoming Events</h2>
+            <ul className="space-y-4 m-0 p-0 list-none flex-1 overflow-y-auto pr-2">
                 {events?.slice(0, 4).map((event: EventsData) => (
-                    <li className={style.eventContainer} key={event._id}>
-                        <span className={style.blueDot}></span>
-                        <div className={style.eventData}>
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    width: '100%',
-                                }}
-                            >
-                                <h3>{event.title}</h3>
-                                <span>
-                                    {dayjs(event.startDate).format(
-                                        'ddd DD MMM YYYY',
-                                    )}
+                    <li
+                        key={event._id}
+                        className="relative pl-6 py-3 border-b border-slate-100 last:border-0 group hover:bg-slate-50 transition-colors rounded-md px-2"
+                    >
+                        {/* Blue Dot Indicator */}
+                        <span className="absolute left-2 top-5 w-2 h-2 rounded-full bg-primary-blue shadow-sm"></span>
+
+                        <div className="flex flex-col gap-1 w-full">
+                            <div className="flex justify-between items-start w-full gap-2">
+                                <h3 className="font-semibold text-slate-700 text-[15px] leading-tight group-hover:text-primary-blue transition-colors">
+                                    {event.title}
+                                </h3>
+                                <span className="text-xs font-medium text-slate-400 whitespace-nowrap bg-slate-100 px-2 py-1 rounded-md">
+                                    {dayjs(event.startDate).format('ddd DD MMM YYYY')}
                                 </span>
                             </div>
-                            <p>{event.description}</p>
+                            <p className="text-sm text-slate-500 line-clamp-2 mt-1">
+                                {event.description}
+                            </p>
                         </div>
                     </li>
                 ))}
+
+                {(!events || events.length === 0) && (
+                    <li className="text-center py-8 text-slate-400 text-sm">
+                        No upcoming events scheduled.
+                    </li>
+                )}
             </ul>
         </div>
     )

@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import { ModalComponent } from '@/Components/Modal/Modal'
-import QrCodeIcon from '@mui/icons-material/QrCode'
+import { QrCode } from 'lucide-react'
 import { InventoryContext } from '../InventoryContext'
 import { useGetOneInventoryItem } from '../Hook'
 import style from '../style/singleInventoryItem.module.scss'
@@ -28,7 +28,7 @@ export const SingleInventoryItem = () => {
                         <div>
                             <p className={style.sn}>
                                 {data?.serialNumber}
-                                <QrCodeIcon />
+                                <QrCode size={20} className="text-slate-500 inline-block ml-2" />
                             </p>
                             {data && renderStatus(data.status, data.userId)}
                         </div>
@@ -57,10 +57,10 @@ export const SingleInventoryItem = () => {
                                             <p>
                                                 {history.returnDate
                                                     ? dayjs(
-                                                          history.returnDate,
-                                                      ).format(
-                                                          'DD MMMM YYYY - HH:MM',
-                                                      )
+                                                        history.returnDate,
+                                                    ).format(
+                                                        'DD MMMM YYYY - HH:MM',
+                                                    )
                                                     : 'Not yet'}
                                             </p>
                                             <p>
@@ -93,8 +93,8 @@ const renderStatus = (
                         status === 'assigned'
                             ? '#d32f2f'
                             : status === 'available'
-                              ? '#02a700'
-                              : '4d4d4d',
+                                ? '#02a700'
+                                : '4d4d4d',
                 }}
             >
                 {status}

@@ -1,8 +1,7 @@
+import React from 'react'
 import { useAuth } from '@/Context/AuthProvider.tsx'
-import Card1 from '../../Components/Card/Card.tsx'
-import style from '../Dashboard/style/dashboard.module.css'
 import Calendar from './components/calendar.tsx'
-import Card from './components/card.tsx'
+import CardInfo from './components/card.tsx'
 import InfoSection from './components/infoSection.tsx'
 import PieChartComponent from './components/piechart.tsx'
 import { DashboardProvider, useDashboardContext } from './context/hook.tsx'
@@ -14,145 +13,94 @@ import { useNavigate } from 'react-router-dom'
 
 const DashboardContent: React.FC = () => {
     const { employeeData } = useDashboardContext()
-    greeter()
-
     const { currentUser } = useAuth()
+    const navigate = useNavigate()
+
     const userName = currentUser ? currentUser.firstName : 'User'
-    const isAdmin = currentUser?.role === 'hr'
+    const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'hr'
 
-    const fetchUserProfile = async () => {
-        const response = await AxiosInstance.get('/user')
-        console.log('Fetched user profile:', response.data)
-        return response.data
-    }
-
-    const { data: UserProfileData } = useQuery({
+    const { data: UserProfileDataList } = useQuery({
         queryKey: ['userProfile'],
-        queryFn: fetchUserProfile,
+        queryFn: async () => {
+            const response = await AxiosInstance.get('/user')
+            return response.data
+        },
     })
 
-    console.log('UserProfileData', UserProfileData)
-    const navigate = useNavigate()
     return (
-        <div className={style.dashboardContainer}>
-            <div className={style.mainContent}>
-                <div className={style.rightContent}>
-                    <div className={style.welcome}>
-                        <h2>
-                            {greeter()} {userName}!
-                        </h2>
-                        {isAdmin ? (
-                            <p>Here's what's happening with your team today</p>
-                        ) : (
-                            ''
-                        )}
-                    </div>
-                    <div className={style.cardContainer}>
-                        <div className={style.cardGreen}>
-                            <Card
-                                title="Present"
-                                content={employeeData.present.toString()}
-                                icon="Present"
-                            />
-                        </div>
-                        <div className={style.cardBlue}>
-                            <Card
-                                title="Absent"
-                                content={employeeData.absent.toString()}
-                                icon="Absent"
-                            />
-                        </div>
-                        <div className={style.cardYellow}>
-                            <Card
-                                title="On Leave"
-                                content={employeeData.onLeave.toString()}
-                                icon="On Leave"
-                            />
-                        </div>
-                        <div className={style.cardPurple}>
-                            <Card
-                                title="Remote"
-                                content={employeeData.remote.toString()}
-                                icon="Remote"
-                            />
-                        </div>
-                    </div>
-                    <div className={style.middleRow}>
-                        <Card1
-                            padding="20px"
-                            borderRadius="15px"
-                            flex="1"
-                            backgroundColor="rgba(255, 255, 255, 0.7)"
+        <div className="space-y-6 max-w-[1400px] mx-auto">
+            {/* Greeting */}
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
+                        {greeter()}, <span className="text-[#2457a3]">{userName}</span> 👋
+                    </h1>
+                    {isAdmin && (
+                        <p className="text-slate-500 text-sm mt-1">Here's what's happening with your team today.</p>
+                    )}
+                </div>
+            </div>
+
+            {/* Stat cards — using inline grid for reliability */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                <CardInfo title="Present" content={employeeData.present.toString()} icon="Present" />
+                <CardInfo title="Absent" content={employeeData.absent.toString()} icon="Absent" />
+                <CardInfo title="On Leave" content={employeeData.onLeave.toString()} icon="On Leave" />
+                <CardInfo title="Remote" content={employeeData.remote.toString()} icon="Remote" />
+            </div>
+
+            {/* Main row: Calendar + InfoSection + PieChart */}
+            <div style={{ display: 'grid', gridTemplateColumns: '3fr 4fr 3fr', gap: '1.25rem' }}>
+                {/* Calendar */}
+                <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-5">
+                    <h3 className="text-sm font-semibold text-slate-700 mb-4">Calendar</h3>
+                    <Calendar />
+                </div>
+
+                {/* Info Section */}
+                <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-5">
+                    <InfoSection />
+                </div>
+
+                {/* Pie Chart */}
+                <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-5">
+                    <h3 className="text-sm font-semibold text-slate-700 mb-4">Employee Status</h3>
+                    <PieChartComponent />
+                </div>
+            </div>
+
+            {/* Team directory */}
+            <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-5">
+                <h3 className="text-sm font-semibold text-slate-700 mb-5">Team Directory</h3>
+                <div className="flex flex-wrap gap-5">
+                    {UserProfileDataList?.map((employee: UserProfileData) => (
+                        <div
+                            key={employee._id}
+                            className="flex flex-col items-center gap-2 group cursor-pointer p-3 rounded-xl hover:bg-slate-50 transition-colors"
+                            onClick={() => navigate(`/profile/${employee._id}`)}
                         >
-                            <h2 style={{ justifyContent: 'flex-start' }}>
-                                Calendar
-                            </h2>
-                            <Calendar />
-                        </Card1>
-                        <Card1
-                            padding="20px"
-                            borderRadius="15px"
-                            flex="2"
-                            backgroundColor="rgba(255, 255, 255, 0.7)"
-                        >
-                            <InfoSection />
-                        </Card1>
-                        <Card1
-                            padding="20px"
-                            borderRadius="15px"
-                            flex="2"
-                            backgroundColor="rgba(255, 255, 255, 0.7)"
-                        >
-                            <h2>Employee Status</h2>
-                            <PieChartComponent />
-                        </Card1>
-                    </div>
-                    <Card1
-                        backgroundColor="rgba(255, 255, 255, 0.7)"
-                        padding="20px"
-                        border="15px"
-                        marginTop="20px"
-                        borderRadius="15px"
-                        flex="1"
-                    >
-                        <h2>Team</h2>
-                        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                            {UserProfileData?.map(
-                                (employee: UserProfileData) => (
-                                    <div
-                                        key={employee._id}
-                                        style={{
-                                            margin: '10px',
-                                            padding: '10px',
-                                            backgroundColor: 'transparent',
-                                            textAlign: 'center',
-                                        }}
-                                    >
-                                        <img
-                                            src={employee.imageUrl}
-                                            alt={`${employee.firstName} ${employee.lastName}`}
-                                            style={{
-                                                width: '100px',
-                                                height: '100px',
-                                                borderRadius: '50%',
-                                                objectFit: 'cover',
-                                                cursor: 'pointer',
-                                            }}
-                                            onClick={() =>
-                                                navigate(
-                                                    `/profile/${employee._id}`,
-                                                )
-                                            }
-                                        />
-                                        <p>
-                                            {employee.firstName}{' '}
-                                            {employee.lastName}
-                                        </p>
+                            <div className="relative w-14 h-14">
+                                {employee.imageUrl ? (
+                                    <img
+                                        src={employee.imageUrl}
+                                        alt={`${employee.firstName} ${employee.lastName}`}
+                                        className="w-14 h-14 rounded-full object-cover ring-2 ring-slate-100 group-hover:ring-[#2457a3] transition-all"
+                                    />
+                                ) : (
+                                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#2457a3] to-[#4A7BCD] flex items-center justify-center text-white font-bold text-lg ring-2 ring-slate-100 group-hover:ring-[#2457a3] transition-all">
+                                        {employee.firstName?.charAt(0)}{employee.lastName?.charAt(0)}
                                     </div>
-                                ),
-                            )}
+                                )}
+                                <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-white" />
+                            </div>
+                            <div className="text-center">
+                                <p className="text-xs font-semibold text-slate-700 group-hover:text-[#2457a3] transition-colors leading-tight">
+                                    {employee.firstName} {employee.lastName}
+                                </p>
+                                <p className="text-[10px] text-slate-400 capitalize mt-0.5">{(employee as any).role ?? ''}</p>
+                            </div>
                         </div>
-                    </Card1>
+                    ))}
                 </div>
             </div>
         </div>

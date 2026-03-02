@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { PayrollContextSpecific, PayrollRowSpecifc } from '../interface'
-import { GridPaginationModel } from '@mui/x-data-grid'
+import { PaginationModel } from '@/types/table'
 import AxiosInstance from '@/Helpers/Axios'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
@@ -15,7 +15,7 @@ export const PayrollProviderSpecific: React.FC<{
     const [page, setPage] = useState(0)
     const [pageSize, setPageSize] = useState(5)
 
-    const handlePaginationModelChange = (model: GridPaginationModel) => {
+    const handlePaginationModelChange = (model: PaginationModel) => {
         setPage(model.page)
         setPageSize(model.pageSize)
     }
@@ -56,7 +56,7 @@ export const PayrollProviderSpecific: React.FC<{
             bonusDescription: payrollData.bonusDescription,
             currency: payrollData.currency,
             bonus: payrollData.bonus,
-            userId: payrollData.userId._id,
+            userId: payrollData.userId,
         })) ?? []
 
     const columns = [

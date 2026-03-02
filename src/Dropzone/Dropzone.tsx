@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import styles from './Dropzone.module.css'
-import CloseIcon from '@mui/icons-material/Close'
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile'
+import { X, FileText } from 'lucide-react'
 import { useEvents } from '@/Pages/Events/Context/EventsContext'
 import Button from '@/Components/Button/Button'
 import { ButtonTypes } from '@/Components/Button/ButtonTypes'
@@ -60,7 +59,7 @@ const Dropzone: React.FC<DropzoneProps> = ({ className }) => {
                 <input {...getInputProps()} />
                 {previewFiles.length === 0 ? (
                     <>
-                        <InsertDriveFileIcon className={styles.fileIcon} />
+                        <FileText className={styles.fileIcon} />
                         {isDragActive ? (
                             <p>Drop the files here ...</p>
                         ) : (
@@ -73,7 +72,7 @@ const Dropzone: React.FC<DropzoneProps> = ({ className }) => {
                     <div className={styles.previewGrid}>
                         {previewFiles.map((file) => (
                             <div key={file.name} className={styles.previewItem}>
-                                <InsertDriveFileIcon
+                                <FileText
                                     className={styles.fileIcon}
                                 />
                                 <div className={styles.fileName}>
@@ -86,11 +85,8 @@ const Dropzone: React.FC<DropzoneProps> = ({ className }) => {
                                     }}
                                     className={styles.removeButton}
                                 >
-                                    <CloseIcon
-                                        style={{
-                                            width: '15px',
-                                            height: '15px',
-                                        }}
+                                    <X
+                                        size={15}
                                     />
                                 </button>
                             </div>

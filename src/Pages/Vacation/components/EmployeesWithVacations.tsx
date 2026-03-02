@@ -1,5 +1,4 @@
 import { useGetUsersWithVacations } from '../Hook/index.ts'
-import { CircularProgress } from '@mui/material'
 import { UserWithVacation } from '../types.ts'
 import style from '../style/employeesWithVacations.module.scss'
 import { useContext, useEffect } from 'react'
@@ -32,7 +31,7 @@ export const EmployeesWithVacations = () => {
     if (isLoading)
         return (
             <div className={style.loading}>
-                <CircularProgress />
+                <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
             </div>
         )
 
@@ -49,9 +48,9 @@ export const EmployeesWithVacations = () => {
                         items={
                             user.vacations
                                 ? {
-                                      type: 'Vacation',
-                                      itemArr: user.vacations,
-                                  }
+                                    type: 'Vacation',
+                                    itemArr: user.vacations,
+                                }
                                 : undefined
                         }
                     >
@@ -60,7 +59,7 @@ export const EmployeesWithVacations = () => {
                                 <h3>Vacations this year</h3>
                                 <div>
                                     {user.vacations &&
-                                    user.vacations.length > 0 ? (
+                                        user.vacations.length > 0 ? (
                                         user.vacations.map(({ type, _id }) => (
                                             <p key={_id}>{type}</p>
                                         ))

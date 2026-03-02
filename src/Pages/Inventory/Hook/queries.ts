@@ -2,9 +2,9 @@ import AxiosInstance from '@/Helpers/Axios'
 import { InventoryItem } from '../types'
 
 export const getAllInventoryItems = async (
-    page: string,
-    limit: string,
-): Promise<InventoryItem[]> => {
+    page: string = '1',
+    limit: string = '10',
+): Promise<{ data: InventoryItem[]; totalPages: number }> => {
     const res = await AxiosInstance.get(`/asset?page=${page}&limit=${limit}`)
     return res.data
 }

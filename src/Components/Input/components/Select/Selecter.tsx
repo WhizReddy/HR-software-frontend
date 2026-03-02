@@ -1,74 +1,82 @@
-import { Autocomplete, TextField } from '@mui/material'
-import { useState } from 'react'
-import { inputStyles } from '../../Styles'
+import React from 'react'
 
 interface SelecterProps {
-    value: string | string[]
-    onChange: (value: string | string[]) => void
-    options: string[]
-    multiple: boolean
-    label: string
-    name: string
-    width: string
+    label?: string
+    name?: string
+    value?: string | string[]
+    onChange?: (value: string | string[]) => void
+    options?: { value: string; label: string }[] | string[]
+    multiple?: boolean
+    width?: string | number
+    required?: boolean
+    disabled?: boolean
+    placeholder?: string
 }
 
-const Selecter = ({
-    value,
-    onChange,
-    options,
-    multiple,
+const Selecter: React.FC<SelecterProps> = ({
     label,
     name,
+    value,
+    onChange,
+    options = [],
+    multiple = false,
     width,
-}: SelecterProps) => {
-    const [isOpen, setIsOpen] = useState(false)
+    required,
+    disabled,
+    placeholder,
+}) => {
+    const normalizedOptions = options.map((opt) =>
+        typeof opt === 'string' ? { value: opt, label: opt } : opt,
+    )
 
-    const handleChange = (
-        event: React.SyntheticEvent,
-        newValue: string | string[] | null,
-    ) => {
-        event.preventDefault()
-        if (newValue !== null) {
-            onChange(newValue)
+    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        if (!onChange) return
+        if (multiple) {
+            const selected = Array.from(e.target.selectedOptions).map((o) => o.value)
+            onChange(selected)
         } else {
-            onChange([])
+            onChange(e.target.value)
         }
     }
 
+    const selectedValue = Array.isArray(value) ? value : value ?? ''
+
     return (
-        <Autocomplete
-            id={name}
-            open={isOpen}
-            multiple={multiple}
-            onOpen={() => setIsOpen(true)}
-            onClose={() => setIsOpen(false)}
-            options={options}
-            value={multiple ? (value as string[]) : (value as string)}
-            onChange={handleChange}
-            renderInput={(params) => (
-                <TextField
-                    {...params}
-                    label={label}
-                    variant="filled"
-                    size="small"
-                    sx={{ ...inputStyles, width: width || '100%' }}
-                    InputLabelProps={{
-                        style: {
-                            color: '#4C556B',
-                            fontFamily: '"Outfit", sans-serif',
-                        },
-                        shrink: true,
-                    }}
-                    InputProps={{
-                        disableUnderline: true,
-                        ...params.InputProps,
-                        endAdornment: <>{params.InputProps.endAdornment}</>,
-                    }}
-                />
+        <div
+            className="flex flex-col gap-1"
+            style={{ width: width ? (typeof width === 'number' ? `${width}px` : width) : '100%' }}
+        >
+            {label && (
+                <label htmlFor={name} className="text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                    {label}
+                </label>
             )}
-        />
+            <select
+                id={name}
+                name={name}
+                multiple={multiple}
+                required={required}
+                disabled={disabled}
+                value={selectedValue}
+                onChange={handleChange}
+                className="w-full rounded-lg border border-slate-200 bg-white text-slate-800 text-sm px-3 py-2
+                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                    disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed
+                    transition-shadow"
+            >
+                {placeholder && (
+                    <option value="" disabled>
+                        {placeholder}
+                    </option>
+                )}
+                {normalizedOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                    </option>
+                ))}
+            </select>
+        </div>
     )
 }
-
 
 export default Selecter

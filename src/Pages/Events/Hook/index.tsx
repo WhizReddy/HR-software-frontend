@@ -12,10 +12,10 @@ export const useGetAllEvents = () => {
     const query = useInfiniteQuery({
         queryKey: ['events', searchEvent],
         queryFn: ({ pageParam = 0 }) =>
-        fetchEvents(searchEvent || '', pageParam),
+            fetchEvents(searchEvent || '', pageParam),
         initialPageParam: 0,
-        getNextPageParam: (lastPage, allPages) => {
-            if (lastPage.length < 6) {
+        getNextPageParam: (lastPage: any, allPages) => {
+            if (lastPage?.data && lastPage.data.length < 6) {
                 return undefined
             }
             return allPages.length
@@ -42,7 +42,7 @@ export const useGetAllEvents = () => {
     useEffect(() => {
         setSearchEvent(searchParams.get('search') || '')
     }, [searchParams])
-    
+
 
     return {
         ...query,
@@ -51,7 +51,7 @@ export const useGetAllEvents = () => {
     }
 }
 
-export const useCreateEvent = (handleCloseDrawer: () => void = () => {}) => {
+export const useCreateEvent = (handleCloseDrawer: () => void = () => { }) => {
     const queryClient = useQueryClient()
     const [toastOpen, setToastOpen] = useState(false)
     const [toastMessage, setToastMessage] = useState('')
@@ -223,7 +223,7 @@ export const useCreateEvent = (handleCloseDrawer: () => void = () => {}) => {
     }
 }
 
-export const useUpdateEvent = (handleCloseDrawer: () => void = () => {}) => {
+export const useUpdateEvent = (handleCloseDrawer: () => void = () => { }) => {
     const queryClient = useQueryClient()
     const [editingEvent, setEditingEvent] = useState<EventsData | null>(null)
     const [showEditDrawer, setEditDrawer] = useState(false)
@@ -339,15 +339,15 @@ export const useUpdateEvent = (handleCloseDrawer: () => void = () => {}) => {
                 type: editType,
                 poll: includePollInEdit
                     ? {
-                          question: editPollQuestion,
-                          options: editPollOptions
-                              .filter((option) => option.trim() !== '')
-                              .map((option) => ({
-                                  option,
-                                  votes: 0,
-                                  voters: [],
-                              })),
-                      }
+                        question: editPollQuestion,
+                        options: editPollOptions
+                            .filter((option) => option.trim() !== '')
+                            .map((option) => ({
+                                option,
+                                votes: 0,
+                                voters: [],
+                            })),
+                    }
                     : null,
             }
             const response = await AxiosInstance.patch(

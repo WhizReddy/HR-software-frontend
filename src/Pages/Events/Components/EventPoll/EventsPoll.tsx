@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import Checkbox from '@mui/material/Checkbox'
-import { Tooltip } from '@mui/material'
 import styles from './style/EventsPoll.module.css'
 import AxiosInstance from '@/Helpers/Axios'
 import { useAuth } from '@/Context/AuthProvider'
@@ -9,7 +7,7 @@ import { EventPollProps, Poll, PollOption, Voter } from './Interface/Interface'
 const EventPoll: React.FC<EventPollProps> = ({ poll, eventId, userId }) => {
     const { currentUser } = useAuth()
     const [localPoll, setLocalPoll] = useState<Poll>(poll)
-    const isAdmin = currentUser?.role === 'hr'
+    const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'hr'
 
     useEffect(() => {
         setLocalPoll(poll)
@@ -39,13 +37,13 @@ const EventPoll: React.FC<EventPollProps> = ({ poll, eventId, userId }) => {
                     options: prevPoll.options.map((opt) =>
                         opt.option === existingVotedOption.option
                             ? {
-                                  ...opt,
-                                  votes: opt.votes - 1,
-                                  voters: opt.voters.filter(
-                                      (voter) =>
-                                          voter._id !== userId.toString(),
-                                  ),
-                              }
+                                ...opt,
+                                votes: opt.votes - 1,
+                                voters: opt.voters.filter(
+                                    (voter) =>
+                                        voter._id !== userId.toString(),
+                                ),
+                            }
                             : opt,
                     ),
                 }))
@@ -61,17 +59,17 @@ const EventPoll: React.FC<EventPollProps> = ({ poll, eventId, userId }) => {
                 options: prevPoll.options.map((opt) =>
                     opt.option === option
                         ? {
-                              ...opt,
-                              votes: opt.votes + 1,
-                              voters: [
-                                  ...opt.voters,
-                                  {
-                                      _id: userId.toString(),
-                                      firstName: currentUser?.firstName || '',
-                                      lastName: currentUser?.lastName || '',
-                                  },
-                              ],
-                          }
+                            ...opt,
+                            votes: opt.votes + 1,
+                            voters: [
+                                ...opt.voters,
+                                {
+                                    _id: userId.toString(),
+                                    firstName: currentUser?.firstName || '',
+                                    lastName: currentUser?.lastName || '',
+                                },
+                            ],
+                        }
                         : opt,
                 ),
             }))
@@ -100,11 +98,11 @@ const EventPoll: React.FC<EventPollProps> = ({ poll, eventId, userId }) => {
 
         return (
             <span>
-                <Checkbox
+                <input
+                    type="checkbox"
                     checked={userVoted}
-                    color="success"
-                    size="small"
-                    sx={{ padding: 0 }}
+                    readOnly
+                    className="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 cursor-pointer accent-emerald-600"
                 />
             </span>
         )
@@ -113,20 +111,12 @@ const EventPoll: React.FC<EventPollProps> = ({ poll, eventId, userId }) => {
     const renderAdminTooltip = (option: PollOption) => {
         if (!isAdmin) return null
 
+        const tooltipText = option.voters.map(v => `${v.firstName} ${v.lastName}`).join('\n')
+
         return (
-            <Tooltip
-                title={
-                    <div>
-                        {option.voters.map((voter, index) => (
-                            <div
-                                key={index}
-                            >{`${voter.firstName} ${voter.lastName}`}</div>
-                        ))}
-                    </div>
-                }
-            >
+            <div title={tooltipText}>
                 <span className={styles.voteCount}>{option.votes}</span>
-            </Tooltip>
+            </div>
         )
     }
 

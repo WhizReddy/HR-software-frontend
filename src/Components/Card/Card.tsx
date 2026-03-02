@@ -1,40 +1,32 @@
-import styles from './Card.module.css'
-import { CardProps } from './Interface'
+import React from 'react'
+
+interface CardProps {
+    children: React.ReactNode
+    backgroundColor?: string
+    borderRadius?: string
+    border?: string
+    padding?: string
+    className?: string
+    onClick?: () => void
+}
 
 const Card: React.FC<CardProps> = ({
     children,
-    padding,
-    borderRadius,
-    height,
-    gap,
-    flex,
-    className,
-    style,
-    width,
-    border,
     backgroundColor,
-    position,
-    alignSelf,
-    marginTop,
+    borderRadius,
+    border,
+    padding,
+    className = '',
     onClick,
 }) => {
-
     return (
         <div
-            className={`${styles.card} ${className || ''}`}
+            className={`bg-white shadow-sm overflow-hidden ${className}`}
             style={{
-                ...style,
-                width: width || '100%',
-                flex: flex || '0',
-                padding: padding || '1rem',
-                borderRadius: borderRadius || '4px',
-                gap: gap || '0',
-                height: height || 'auto',
-                border: border || 'none',
-                backgroundColor: backgroundColor || '#ffffff',
-                position: position || 'static',
-                alignContent: alignSelf || 'flex-start',
-                marginTop: marginTop || '0',
+                backgroundColor: backgroundColor || undefined,
+                borderRadius: borderRadius || '12px',
+                border: border || '1px solid #e2e8f0',
+                padding: padding || '16px',
             }}
             onClick={onClick}
         >

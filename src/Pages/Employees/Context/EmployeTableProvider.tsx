@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { GridPaginationModel, GridRenderCellParams, GridRowParams } from '@mui/x-data-grid'
+import { PaginationModel, RenderCellParams } from '@/types/table'
 import { Link, useNavigate } from 'react-router-dom'
 import { EmployeeContext, EmployeeRow, UserProfileData } from '../interfaces/Employe'
 import AxiosInstance from '@/Helpers/Axios'
@@ -11,17 +11,17 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({
     const [page, setPage] = useState(0)
     const [pageSize, setPageSize] = useState(5)
 
-    const handlePaginationModelChange = (model: GridPaginationModel) => {
+    const handlePaginationModelChange = (model: PaginationModel) => {
         setPage(model.page)
         setPageSize(model.pageSize)
     }
 
     const fetchEmployes = async () => {
-        const response = await AxiosInstance.get<{data: UserProfileData[], totalPages: number}>(`/user?page=${page}&limit=${pageSize}`)
+        const response = await AxiosInstance.get<{ data: UserProfileData[], totalPages: number }>(`/user?page=${page}&limit=${pageSize}`)
         return response.data
     }
 
-    const { data: users, isPending } = useQuery<{ data: UserProfileData[]; totalPages: number },Error>({
+    const { data: users, isPending } = useQuery<{ data: UserProfileData[]; totalPages: number }, Error>({
         queryKey: ['users', page, pageSize],
         queryFn: () => fetchEmployes(),
     })
@@ -32,6 +32,7 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({
         users?.data.map((user, index) => ({
             id: page * pageSize + index + 1,
             originalId: user._id,
+            imageUrl: user.imageUrl,
             role: user.role,
             phone: user.phone,
             email: user.auth?.email || '',
@@ -48,7 +49,7 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({
             field: 'actions',
             headerName: 'Actions',
             width: 120,
-            renderCell: (params: GridRenderCellParams) => (
+            renderCell: (params: RenderCellParams<EmployeeRow>) => (
                 <Link
                     style={{ textDecoration: 'none', color: '#4C556B' }}
                     to={`/profile/${params.row.originalId}`}
@@ -60,7 +61,7 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({
     ]
     const getRowId = (row: EmployeeRow) => row.id
 
-    const handleRowClick = (params: GridRowParams) => {
+    const handleRowClick = (params: { row: EmployeeRow }) => {
         navigate(`/profile/${params.row.originalId}`)
     }
 

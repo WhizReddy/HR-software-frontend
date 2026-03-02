@@ -4,11 +4,10 @@ import { usePayrollContext } from './Context/PayrollTableContext'
 import { PayrollProvider } from './Context/PayrollTableProvider'
 import style from './styles/Payroll.module.css'
 import { RingLoader } from 'react-spinners'
-import { Collapse } from '@mui/material'
 import { useState } from 'react'
 import { ButtonTypes } from '@/Components/Button/ButtonTypes'
 import Button from '@/Components/Button/Button'
-import { Close, FilterList } from '@mui/icons-material'
+import { X, Filter } from 'lucide-react'
 function PayrollContent() {
     const {
         rows,
@@ -82,19 +81,17 @@ function PayrollContent() {
                     borderColor="transparent"
                     type={ButtonTypes.SECONDARY}
                     onClick={() => setShowFilters((prev) => !prev)}
-                    icon={showFilters ? <Close /> : <FilterList />}
+                    icon={showFilters ? <X /> : <Filter />}
                 />
-                <Collapse
-                    in={showFilters}
-                    timeout="auto"
-                    orientation="horizontal"
-                    
+                <div
+                    className={`transition-all duration-300 overflow-hidden ml-2 ${showFilters ? 'w-[950px] opacity-100' : 'w-0 opacity-0'
+                        }`}
                 >
                     <div
                         style={{
                             display: 'flex',
                             justifyContent: 'space-between',
-                            marginLeft: 10,
+                            width: '950px'
                         }}
                     >
                         <Input
@@ -116,7 +113,7 @@ function PayrollContent() {
                         <Input
                             width={150}
                             name="workingDays"
-                              type="number"
+                            type="number"
                             label="Working Days"
                             isFilter
                             onChange={handleWorkingDaysChange}
@@ -124,7 +121,7 @@ function PayrollContent() {
                         <Input
                             width={150}
                             name="maxNetSalary"
-                                 type="number"
+                            type="number"
                             label="Max Net Salary"
                             isFilter
                             onChange={handleMaxSalaryChange}
@@ -132,7 +129,7 @@ function PayrollContent() {
                         <Input
                             width={150}
                             name="minNetSalary"
-                                type="number"
+                            type="number"
                             label="Min Net Salary"
                             isFilter
                             onChange={handleMinSalaryChange}
@@ -146,7 +143,7 @@ function PayrollContent() {
                             onChange={handleBonusChange}
                         />
                     </div>
-                </Collapse>
+                </div>
             </div>
             {isPending ? (
                 <div className={style.ring}>

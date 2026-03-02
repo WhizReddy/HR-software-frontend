@@ -1,44 +1,58 @@
-import React from 'react'
-import Carousel from 'react-material-ui-carousel'
-import { Paper, Typography } from '@mui/material'
+import React, { useState } from 'react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface CarouselProps {
-    images: string[]
+    images?: string[]
+    children?: React.ReactNode
 }
 
-const Example: React.FC<CarouselProps> = ({ images }) => {
+const Example: React.FC<CarouselProps> = ({ images = [], children }) => {
+    const [current, setCurrent] = useState(0)
+
     if (!images || images.length === 0) {
-        return <Typography variant="h6">No images available</Typography>
+        return (
+            <div className="w-full rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center min-h-[200px] text-slate-400 text-sm">
+                {children || 'No images'}
+            </div>
+        )
     }
 
-    return (
-        <Carousel sx={{ width: '100%', height: '100%' }}>
-            {images.map((image, i) => (
-                <Item key={i} image={image} />
-            ))}
-        </Carousel>
-    )
-}
+    const prev = () => setCurrent((c) => (c === 0 ? images.length - 1 : c - 1))
+    const next = () => setCurrent((c) => (c === images.length - 1 ? 0 : c + 1))
 
-interface ItemProps {
-    image: string
-}
-
-const Item: React.FC<ItemProps> = ({ image }) => {
     return (
-        <Paper sx={{ width: '100%', height: '100%' }}>
+        <div className="relative w-full rounded-xl overflow-hidden bg-slate-900">
             <img
-                src={image}
-                alt="Event"
-                style={{
-                    width: '100%',
-                    height: '200px',
-                    objectFit: 'contain',
-                    border: 'none',
-                    display: 'block',
-                }}
+                src={images[current]}
+                alt={`slide-${current}`}
+                className="w-full object-cover max-h-72"
             />
-        </Paper>
+            {images.length > 1 && (
+                <>
+                    <button
+                        onClick={prev}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/40 text-white hover:bg-black/60 transition-colors"
+                    >
+                        <ChevronLeft size={18} />
+                    </button>
+                    <button
+                        onClick={next}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/40 text-white hover:bg-black/60 transition-colors"
+                    >
+                        <ChevronRight size={18} />
+                    </button>
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                        {images.map((_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setCurrent(i)}
+                                className={`w-2 h-2 rounded-full transition-colors ${i === current ? 'bg-white' : 'bg-white/40'}`}
+                            />
+                        ))}
+                    </div>
+                </>
+            )}
+        </div>
     )
 }
 

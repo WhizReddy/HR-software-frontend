@@ -1,116 +1,45 @@
-import * as React from 'react'
-import dayjs, { Dayjs } from 'dayjs'
-import Badge from '@mui/material/Badge'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay'
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar'
-import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton'
-function getRandomNumber(min: number, max: number) {
-    return Math.round(Math.random() * (max - min) + min)
-}
-
-function fakeFetch(date: Dayjs, { signal }: { signal: AbortSignal }) {
-    return new Promise<{ daysToHighlight: number[] }>((resolve, reject) => {
-        const timeout = setTimeout(() => {
-            const daysInMonth = date.daysInMonth()
-            const daysToHighlight = [1, 2, 3].map(() =>
-                getRandomNumber(1, daysInMonth),
-            )
-
-            resolve({ daysToHighlight })
-        }, 500)
-
-        signal.onabort = () => {
-            clearTimeout(timeout)
-            reject(new DOMException('aborted', 'AbortError'))
-        }
-    })
-}
-
-const initialValue = dayjs(new Date())
-
-function ServerDay(
-    props: PickersDayProps<Dayjs> & { highlightedDays?: number[] },
-) {
-    const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props
-
-    const isSelected =
-        !props.outsideCurrentMonth &&
-        highlightedDays.indexOf(props.day.date()) >= 0
-
-    return (
-        <Badge
-            key={props.day.toString()}
-            overlap="circular"
-            badgeContent={isSelected ? '🌚' : undefined}
-        >
-            <PickersDay
-                {...other}
-                outsideCurrentMonth={outsideCurrentMonth}
-                day={day}
-            />
-        </Badge>
-    )
-}
+import React from 'react'
+import dayjs from 'dayjs'
 
 export default function Calendar() {
-    const requestAbortController = React.useRef<AbortController | null>(null)
-    const [isLoading, setIsLoading] = React.useState(false)
-    const [highlightedDays, setHighlightedDays] = React.useState([1, 2, 15])
-
-    const fetchHighlightedDays = (date: Dayjs) => {
-        const controller = new AbortController()
-        fakeFetch(date, {
-            signal: controller.signal,
-        })
-            .then(({ daysToHighlight }) => {
-                setHighlightedDays(daysToHighlight)
-                setIsLoading(false)
-            })
-            .catch((error) => {
-                if (error.name !== 'AbortError') {
-                    throw error
-                }
-            })
-
-        requestAbortController.current = controller
-    }
-
-    React.useEffect(() => {
-        fetchHighlightedDays(initialValue)
-
-        return () => requestAbortController.current?.abort()
-    }, [])
-
-    const handleMonthChange = (date: Dayjs) => {
-        if (requestAbortController.current) {
-            requestAbortController.current.abort()
-        }
-
-        setIsLoading(true)
-        setHighlightedDays([])
-        fetchHighlightedDays(date)
-    }
+    const today = dayjs()
+    const daysInMonth = today.daysInMonth()
+    const firstDay = today.startOf('month').day()
+    const highlightedDays = [1, 2, 15]
 
     return (
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateCalendar
-                defaultValue={initialValue}
-                loading={isLoading}
-                onMonthChange={handleMonthChange}
-                renderLoading={() => <DayCalendarSkeleton />}
-                slots={{
-                    day: ServerDay,
-                }}
-                slotProps={{
-                    day: {
-                        highlightedDays,
-                    } as Partial<
-                        PickersDayProps<Dayjs> & { highlightedDays: number[] }
-                    >,
-                }}
-            />
-        </LocalizationProvider>
+        <div className="p-4 bg-white rounded-lg w-full">
+            <div className="flex justify-between items-center mb-4 px-2">
+                <h3 className="font-semibold text-lg text-slate-800">{today.format('MMMM YYYY')}</h3>
+            </div>
+            <div className="grid grid-cols-7 gap-1 text-center text-xs mb-3 font-medium text-slate-400 uppercase tracking-wider">
+                <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+            </div>
+            <div className="grid grid-cols-7 gap-y-2 gap-x-1 text-center text-sm">
+                {Array.from({ length: firstDay }).map((_, i) => (
+                    <div key={`empty-${i}`} className="p-2"></div>
+                ))}
+                {Array.from({ length: daysInMonth }).map((_, i) => {
+                    const date = i + 1
+                    const isHighlighted = highlightedDays.includes(date)
+                    const isToday = date === today.date()
+
+                    return (
+                        <div
+                            key={date}
+                            className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center cursor-pointer transition-colors relative
+                                ${isToday ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-200' : 'hover:bg-slate-100 text-slate-700 font-medium'}
+                            `}
+                        >
+                            {date}
+                            {isHighlighted && !isToday && <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
+                            </span>}
+                        </div>
+                    )
+                })}
+            </div>
+        </div>
     )
 }

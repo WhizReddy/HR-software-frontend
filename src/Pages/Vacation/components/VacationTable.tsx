@@ -1,7 +1,6 @@
-import { CircularProgress } from '@mui/material'
 import { useGetVacations } from '../Hook'
 import DataTable from '@/Components/Table/Table'
-import { GridPaginationModel, GridRenderCellParams } from '@mui/x-data-grid'
+import { PaginationModel, RenderCellParams } from '@/types/table'
 import { dateFormatter } from '@/Helpers/dateFormater'
 import style from '../style/vacationTable.module.scss'
 import { useContext, useEffect } from 'react'
@@ -33,7 +32,7 @@ export const VacationTable = () => {
     }, [searchParams, setSearchParams])
 
     if (error) return <p>Error: {error.message}</p>
-    if (isPending) return <CircularProgress />
+    if (isPending) return <div className="flex justify-center p-4"><div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div></div>
 
     const rows = data?.data.map((vacation: Vacation) => ({
         id: vacation._id,
@@ -44,7 +43,7 @@ export const VacationTable = () => {
         endDate: vacation.endDate,
         actions: vacation._id,
     }))
-    const handlePaginationModelChange = (model: GridPaginationModel) => {
+    const handlePaginationModelChange = (model: PaginationModel) => {
         setSearchParams((prev) => {
             const newParams = new URLSearchParams(prev)
             newParams.set('page', model.page.toString())
@@ -61,15 +60,15 @@ export const VacationTable = () => {
             field: 'status',
             headerName: 'Status',
             flex: 1,
-            renderCell: ({ value }: GridRenderCellParams) => {
+            renderCell: ({ value }: RenderCellParams) => {
                 const color =
                     value === 'pending'
                         ? 'orange'
                         : value === 'accepted'
-                          ? 'green'
-                          : value === 'rejected'
-                            ? 'red'
-                            : ''
+                            ? 'green'
+                            : value === 'rejected'
+                                ? 'red'
+                                : ''
                 return <StatusBadge color={color} status={value} />
             },
         },
@@ -77,21 +76,21 @@ export const VacationTable = () => {
             field: 'startDate',
             headerName: 'Start Date',
             flex: 1,
-            renderCell: (param: GridRenderCellParams) =>
+            renderCell: (param: RenderCellParams) =>
                 dateFormatter(param.value),
         },
         {
             field: 'endDate',
             headerName: 'End Date',
             flex: 1,
-            renderCell: (param: GridRenderCellParams) =>
+            renderCell: (param: RenderCellParams) =>
                 dateFormatter(param.value),
         },
         {
             field: 'actions',
             headerName: 'Actions',
             flex: 1,
-            renderCell: (param: GridRenderCellParams) => {
+            renderCell: (param: RenderCellParams) => {
                 return (
                     <span
                         onClick={() =>

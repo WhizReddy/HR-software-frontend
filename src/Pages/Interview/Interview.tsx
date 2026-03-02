@@ -1,8 +1,5 @@
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
-import CheckIcon from '@mui/icons-material/Check'
-import DeleteIcon from '@mui/icons-material/Delete'
-import EditCalendarIcon from '@mui/icons-material/EditCalendar'
-import { Tooltip, Tabs, Tab, useTheme } from '@mui/material'
+import { Check, Trash2, CalendarRange } from 'lucide-react'
 import { ButtonTypes } from '@/Components/Button/ButtonTypes'
 import { InterviewProvider, useInterviewContext } from './Hook/InterviewContext'
 import style from './styles/Interview.module.css'
@@ -46,12 +43,6 @@ function InterviewKanbanContent() {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error'
         return <div>Error loading interviews: {errorMessage}</div>
     }
-
-    const theme = useTheme()
-    const applicantCountStyle = {
-        color: theme.palette.text.primary,
-    }
-
     return (
         <div className={style.kanbanBoard}>
             <div className={style.filterContainer}>
@@ -104,23 +95,27 @@ function InterviewKanbanContent() {
                 )}
             </div>
 
-            <Tabs
-                value={currentTab}
-                onChange={handleTabChange}
-                aria-label="Kanban board tabs"
-                className={style.tabs}
-            >
+            <div className="flex border-b border-gray-200 mb-6 gap-6 overflow-x-auto">
                 {phases.map((phase) => (
-                    <Tab key={phase} value={phase} label={phase.toUpperCase()} />
+                    <button
+                        key={phase}
+                        className={`pb-3 font-medium text-sm transition-colors border-b-2 whitespace-nowrap ${currentTab === phase
+                            ? 'border-primary text-primary'
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            }`}
+                        onClick={() => handleTabChange({} as React.SyntheticEvent, phase)}
+                    >
+                        {phase.toUpperCase()}
+                    </button>
                 ))}
-            </Tabs>
+            </div>
 
             <DragDropContext onDragEnd={onDragEnd}>
                 <div className={style.kanbanColumns}>
                     <div key={currentTab} className={style.kanbanColumn}>
                         <h2>
                             {currentTab.toUpperCase()}
-                            <span className={style.applicantCount} style={applicantCountStyle}>
+                            <span className="text-slate-600 ml-2">
                                 ({filteredInterviews.length})
                             </span>
                         </h2>
@@ -148,7 +143,6 @@ function InterviewKanbanContent() {
                                                         className={style.kanbanItem}
                                                     >
                                                         <h3
-                                                            style={applicantCountStyle}
                                                             onClick={() =>
                                                                 handleNavigateToProfile(interview._id.toString())
                                                             }
@@ -171,63 +165,57 @@ function InterviewKanbanContent() {
                                                         )}
                                                         {currentTab !== 'employed' && currentTab !== 'applicant' && (
                                                             <div className={style.buttonContainer}>
-                                                                <Tooltip title="Edit" placement="top">
-                                                                    <span>
-                                                                        <Button
-                                                                            type={ButtonTypes.SECONDARY}
-                                                                            btnText=""
-                                                                            width="40px"
-                                                                            height="30px"
-                                                                            display="flex"
-                                                                            justifyContent="center"
-                                                                            alignItems="center"
-                                                                            color="#2457A3"
-                                                                            borderColor="#2457A3"
-                                                                            icon={<EditCalendarIcon />}
-                                                                            onClick={() =>
-                                                                                handleOpenModal(interview, true)
-                                                                            }
-                                                                        />
-                                                                    </span>
-                                                                </Tooltip>
+                                                                <span title="Edit">
+                                                                    <Button
+                                                                        type={ButtonTypes.SECONDARY}
+                                                                        btnText=""
+                                                                        width="40px"
+                                                                        height="30px"
+                                                                        display="flex"
+                                                                        justifyContent="center"
+                                                                        alignItems="center"
+                                                                        color="#2457A3"
+                                                                        borderColor="#2457A3"
+                                                                        icon={<CalendarRange size={18} />}
+                                                                        onClick={() =>
+                                                                            handleOpenModal(interview, true)
+                                                                        }
+                                                                    />
+                                                                </span>
                                                                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                                                                    <Tooltip title="Delete" placement="top">
-                                                                        <span>
-                                                                            {currentTab !== 'rejected' && (
-                                                                                <Button
-                                                                                    btnText=" "
-                                                                                    type={ButtonTypes.SECONDARY}
-                                                                                    width="35px"
-                                                                                    height="30px"
-                                                                                    color="#C70039"
-                                                                                    borderColor="#C70039"
-                                                                                    display="flex"
-                                                                                    justifyContent="center"
-                                                                                    alignItems="center"
-                                                                                    icon={<DeleteIcon />}
-                                                                                    onClick={() => handleCancel(interview)}
-                                                                                />
-                                                                            )}
-                                                                        </span>
-                                                                    </Tooltip>
+                                                                    <span title="Delete">
+                                                                        {currentTab !== 'rejected' && (
+                                                                            <Button
+                                                                                btnText=" "
+                                                                                type={ButtonTypes.SECONDARY}
+                                                                                width="35px"
+                                                                                height="30px"
+                                                                                color="#C70039"
+                                                                                borderColor="#C70039"
+                                                                                display="flex"
+                                                                                justifyContent="center"
+                                                                                alignItems="center"
+                                                                                icon={<Trash2 size={18} />}
+                                                                                onClick={() => handleCancel(interview)}
+                                                                            />
+                                                                        )}
+                                                                    </span>
                                                                     {currentTab !== 'applicant' && (
-                                                                        <Tooltip title="Accept" placement="top">
-                                                                            <span>
-                                                                                <Button
-                                                                                    btnText=""
-                                                                                    type={ButtonTypes.SECONDARY}
-                                                                                    width="35px"
-                                                                                    height="30px"
-                                                                                    color="rgb(2, 167, 0)"
-                                                                                    borderColor="rgb(2, 167, 0)"
-                                                                                    display="flex"
-                                                                                    justifyContent="center"
-                                                                                    alignItems="center"
-                                                                                    icon={<CheckIcon />}
-                                                                                    onClick={() => handleAccept(interview)}
-                                                                                />
-                                                                            </span>
-                                                                        </Tooltip>
+                                                                        <span title="Accept">
+                                                                            <Button
+                                                                                btnText=""
+                                                                                type={ButtonTypes.SECONDARY}
+                                                                                width="35px"
+                                                                                height="30px"
+                                                                                color="rgb(2, 167, 0)"
+                                                                                borderColor="rgb(2, 167, 0)"
+                                                                                display="flex"
+                                                                                justifyContent="center"
+                                                                                alignItems="center"
+                                                                                icon={<Check size={18} />}
+                                                                                onClick={() => handleAccept(interview)}
+                                                                            />
+                                                                        </span>
                                                                     )}
                                                                 </div>
                                                             </div>

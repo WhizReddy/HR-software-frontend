@@ -1,10 +1,10 @@
-import { GridColDef, GridPaginationModel, GridRowParams } from '@mui/x-data-grid'
+import { ColDef, PaginationModel, RowParams } from '@/types/table'
 import React from 'react'
 
 export interface PayrollContextType {
     rows: PayrollRow[]
-    columns: GridColDef[]
-    handleRowClick: (params: GridRowParams) => void
+    columns: ColDef<PayrollRow>[]
+    handleRowClick: (params: RowParams<PayrollRow>) => void
     getRowId: (row: PayrollRow) => number
     setMonth: (month: number) => void
     setName: (name: string) => void
@@ -18,11 +18,11 @@ export interface PayrollContextType {
     isPending: boolean
     netSalary: number | undefined
     page: number
-    setFilters: React.Dispatch< React.SetStateAction<Record<string, string | boolean>>>
+    setFilters: React.Dispatch<React.SetStateAction<Record<string, string | boolean>>>
     filters: Record<string, string | boolean>
     pageSize: number
     totalPages: number
-    handlePaginationModelChange: (paginationModel: GridPaginationModel) => void
+    handlePaginationModelChange: (paginationModel: PaginationModel) => void
 }
 
 export const PayrollContext = React.createContext<PayrollContextType | undefined>(undefined)
@@ -30,15 +30,15 @@ export const PayrollContext = React.createContext<PayrollContextType | undefined
 export interface PayrollRow {
     id: number
     originalId: string
-    netSalary: number
+    netSalary: number | string
     workingDays: number
     currency: string
     bonus: number
     bonusDescription: string
     socialSecurity: number
-    healthInsurance: number
+    healthInsurance: number | string
     grossSalary: number
-    month: number
+    month: number | string
     year: number
     tax: number
     userId: {

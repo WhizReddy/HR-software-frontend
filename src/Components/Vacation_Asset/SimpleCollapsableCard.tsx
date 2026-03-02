@@ -1,115 +1,87 @@
-import { Asset } from '@/Pages/Holdings/TAsset'
-import { Vacation } from '@/Pages/Vacation/TVacation'
-import { ExpandLess, ExpandMore } from '@mui/icons-material'
-import { Collapse } from '@mui/material'
-import { Dispatch, MouseEvent, ReactNode } from 'react'
-import style from './SimpleCollapsableCard.module.scss'
-import Card from '../Card/Card'
+import React, { useState } from 'react'
+import { ChevronDown, ChevronUp, User } from 'lucide-react'
 
-type SimpleCollapsableCardProps = {
-    user: {
-        _id: string
-        firstName: string
-        lastName: string
-        phone: string
-        role: string
-        imageUrl: string
-    }
-    searchParams: URLSearchParams
-    setSearchParams: Dispatch<React.SetStateAction<URLSearchParams>>
-    items?: {
-        type: string
-        itemArr: Vacation[] | Asset[]
-    }
-    children: ReactNode
+interface Item {
+    _id: string
+    type: string
 }
 
-export default function SimpleCollapsableCard({
+interface UserData {
+    _id: string
+    firstName: string
+    lastName: string
+    imageUrl?: string
+    role?: string
+    [key: string]: unknown
+}
+
+interface SimpleCollapsableCardProps {
+    user: UserData
+    searchParams?: URLSearchParams
+    setSearchParams?: (fn: (prev: URLSearchParams) => URLSearchParams) => void
+    items?: {
+        type: 'Vacation' | 'Holding'
+        itemArr: Item[]
+    }
+    children?: React.ReactNode
+}
+
+const SimpleCollapsableCard: React.FC<SimpleCollapsableCardProps> = ({
     user,
-    searchParams,
-    setSearchParams,
     items,
     children,
-}: SimpleCollapsableCardProps) {
-    const { _id, firstName, lastName, phone, role, imageUrl } = user
-    const expandUserCard = (id: string) => {
-        setSearchParams((prev) => {
-            const newParams = new URLSearchParams(prev)
-            newParams.set('selectedUser', id)
-            return newParams
-        })
-    }
-    const collapse = () => {
-        setSearchParams((prev) => {
-            const newParams = new URLSearchParams(prev)
-            newParams.delete('selectedUser')
-            return newParams
-        })
-    }
+}) => {
+    const [expanded, setExpanded] = useState(false)
 
-    const handleCardClick = (e: MouseEvent<HTMLDivElement>) => {
-        e.stopPropagation()
-        if (searchParams.get('selectedUser') === _id) {
-            collapse()
-        } else {
-            expandUserCard(_id)
-        }
-    }
+    const itemCount = items?.itemArr?.length ?? 0
 
     return (
-        <Card
-            className={style.userDiv}
-            padding="1.25rem"
-            borderRadius="1rem"
-            backgroundColor={'white'}
-        >
-            <div className={style.mainData} onClick={handleCardClick}>
-                <div className={style.leftMainData}>
-                    <img
-                        src={imageUrl}
-                        alt={`${firstName}'s profile picture`}
-                    />
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden transition-all">
+            {/* Header row */}
+            <div
+                className="flex items-center justify-between px-5 py-4 cursor-pointer hover:bg-slate-50 transition-colors"
+                onClick={() => setExpanded((prev) => !prev)}
+            >
+                <div className="flex items-center gap-3">
+                    {user.imageUrl ? (
+                        <img
+                            src={user.imageUrl}
+                            alt={`${user.firstName} ${user.lastName}`}
+                            className="w-9 h-9 rounded-full object-cover border border-slate-200"
+                        />
+                    ) : (
+                        <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center">
+                            <User size={18} />
+                        </div>
+                    )}
                     <div>
-                        <h3>
-                            {firstName} {lastName}
-                        </h3>
-                        <p>
-                            {phone} - {role}
+                        <p className="font-semibold text-slate-800 text-sm">
+                            {user.firstName} {user.lastName}
                         </p>
-                    </div>
-                </div>
-                <div className={style.rightMainData}>
-                    <div onClick={handleCardClick}>
-                        <p>
-                            View{' '}
-                            {searchParams.get('selectedUser') === _id
-                                ? 'Less'
-                                : 'More'}
-                        </p>
-                        {searchParams.get('selectedUser') === _id ? (
-                            <ExpandLess fontSize="medium" />
-                        ) : (
-                            <ExpandMore fontSize="medium" />
+                        {user.role && (
+                            <p className="text-xs text-slate-500 capitalize">{user.role}</p>
                         )}
                     </div>
-                    {searchParams.get('selectedUser') !== _id && items && (
-                        <p>
-                            {items.itemArr.length} {items.type}
-                            {items.itemArr.length === 1 ? '' : 's'}
-                        </p>
+                </div>
+                <div className="flex items-center gap-3">
+                    {items && (
+                        <span className="text-xs bg-blue-100 text-blue-700 font-semibold px-2.5 py-1 rounded-full">
+                            {itemCount} {items.type}
+                            {itemCount !== 1 ? 's' : ''}
+                        </span>
                     )}
+                    <div className="text-slate-400">
+                        {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                    </div>
                 </div>
             </div>
-            <Collapse
-                in={
-                    searchParams.get('selectedUser') !== null &&
-                    _id === searchParams.get('selectedUser')
-                }
-                timeout="auto"
-                unmountOnExit
-            >
-                {children}
-            </Collapse>
-        </Card>
+
+            {/* Expanded content */}
+            {expanded && children && (
+                <div className="border-t border-slate-100">{children}</div>
+            )}
+        </div>
     )
 }
+
+export default SimpleCollapsableCard

@@ -7,7 +7,6 @@ import { useParams } from 'react-router-dom'
 import { useHandleItemAssigner } from '../Hook'
 
 import style from '../style/userHoldings.module.scss'
-import { Autocomplete, CircularProgress, TextField } from '@mui/material'
 import { inputStyles } from '@/Components/Input/Styles'
 import Button from '@/Components/Button/Button'
 import { ButtonTypes } from '@/Components/Button/ButtonTypes'
@@ -40,15 +39,15 @@ export default function AssignAssetModal() {
         }
 
         setAutocompleteLoading(true)
-        ;(async () => {
-            if (active) {
-                const { data } = await AxiosInstance.get<Asset[]>(
-                    '/asset?availability=available',
-                )
-                setOptions(data)
-            }
-            setAutocompleteLoading(false)
-        })()
+            ; (async () => {
+                if (active) {
+                    const { data } = await AxiosInstance.get<Asset[]>(
+                        '/asset?availability=available',
+                    )
+                    setOptions(data)
+                }
+                setAutocompleteLoading(false)
+            })()
 
         return () => {
             active = false
@@ -87,65 +86,32 @@ export default function AssignAssetModal() {
                 className={style.itemAssigner}
             >
                 <h3>Assign Item</h3>
-                <Autocomplete
-                    id="users-list"
-                    sx={{
-                        width: '100%',
-                        marginBottom: '1rem',
-                    }}
-                    open={isOpen}
-                    onOpen={() => setIsOpen(true)}
-                    onClose={() => setIsOpen(false)}
-                    onChange={(event, newValue) => {
-                        event.preventDefault()
-                        if (newValue) {
-                            setAssetId(newValue?._id)
-                            setAutocompleteValue(newValue)
-                        }
-                    }}
-                    value={autocompleteValue}
-                    options={options}
-                    loading={autocompleteLoading}
-                    isOptionEqualToValue={(option, value) =>
-                        option._id === value._id
-                    }
-                    getOptionLabel={(option) =>
-                        option.type + ' ' + option.serialNumber
-                    }
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            label="Item"
-                            variant="filled"
-                            size="small"
-                            sx={{
-                                ...inputStyles,
-                            }}
-                            InputLabelProps={{
-                                style: {
-                                    color: '#4C556B',
-                                    fontFamily: '"Outfit", sans-serif',
-                                },
-                                shrink: true,
-                            }}
-                            InputProps={{
-                                disableUnderline: true,
-                                ...params.InputProps,
-                                endAdornment: (
-                                    <>
-                                        {autocompleteLoading ? (
-                                            <CircularProgress
-                                                color="inherit"
-                                                size={20}
-                                            />
-                                        ) : null}
-                                        {params.InputProps.endAdornment}
-                                    </>
-                                ),
-                            }}
-                        />
+                <div className="w-full mb-4 relative">
+                    <select
+                        id="users-list"
+                        className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block p-2.5 appearance-none"
+                        value={assetId || ''}
+                        onChange={(e) => {
+                            const val = e.target.value
+                            setAssetId(val)
+                            const option = options.find((o) => o._id === val)
+                            if (option) setAutocompleteValue(option)
+                        }}
+                        disabled={autocompleteLoading}
+                    >
+                        <option value="" disabled>Select Item</option>
+                        {options.map((option) => (
+                            <option key={option._id} value={option._id}>
+                                {option.type} {option.serialNumber}
+                            </option>
+                        ))}
+                    </select>
+                    {autocompleteLoading && (
+                        <div className="absolute right-3 top-2.5">
+                            <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        </div>
                     )}
-                />
+                </div>
                 <Input
                     IsUsername
                     name="Date"
